@@ -1,0 +1,150 @@
+sudo apt update
+sudo apt upgrade
+sudo apt-get install \
+sudo apt-get install curl ca-certificates gnupg lsb-release 
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+l
+tar xvzf go1.19.linux-amd64
+cd go1.19.linux-amd64/
+ls
+cdg
+cd go/
+ls
+make
+sudo apt install make
+make
+cd ..
+make
+cd go/
+ls
+cd src/
+l
+make
+ls
+export PATH=$PATH:/usr/local/go/bin
+cd ..
+export PATH=$PATH:/usr/local/go/bin
+go version
+sudo apt install golang-go
+go version
+sudo shutdown
+sudo shutdown now
+docker run hello-wordl
+docker run hello-world
+sudo docker run hello-world
+sudo docker busybox
+sudo docker run busybox
+sudo docker run busybox echo "hello"
+sudo docker run busybox echo "hello"
+ls
+cd Documents/
+ls
+cd D7024E/
+git clone https://github.com/olliefr/docker-gs-ping
+ls
+go get -u golang/x/net
+go get -u golang.org/x/net
+sudo go get -u golang.org/x/net
+go get -u golang.org/x/net
+go build main.go 
+ls
+./main 
+go run main.go
+docker build
+cd ..
+docker build -o docker-gs-ping/
+cd docker-gs-ping/
+go mod download
+go build -o /docker-gs-ping
+sudo go build -o /docker-gs-ping
+cd ..
+ls
+docker build --tag docker-gs-ping .
+cd docker-gs-ping/
+docker build --tag docker-gs-ping .
+sudo docker build --tag docker-gs-ping .
+docker image ls
+sudo docker image ls
+go run main.go
+curl http://localhost:8080/
+go get -u golang.org/x/net
+go
+go 
+clear
+ls
+go mod init
+ls -las
+go mod init
+go help mod init
+docker build --tag docker-gs-ping .
+sudo docker build --tag docker-gs-ping .
+docker compose up
+sudo docker compose up
+sudo docker build --tag docker-gs-ping .
+sudo docker compose up
+sudo docker build --tag docker-gs-ping .
+sudo docker compose up
+sudo docker compose -p 9000 up
+sudo docker -p 9000 compose up
+sudo docker-compose up
+docker stack deplow SWARM
+docker stack deploy SWARM
+docker swarm init
+sudo docker swarm init
+docker stack deploy SWARM
+docker stack deploy STACK --compose-file docker-compose.yml 
+sudo docker stack deploy STACK --compose-file docker-compose.yml 
+docker stop
+docker stop 32a73b91ba01
+sudo docker stop 32a73b91ba01
+sudo docker start 32a73b91ba01
+sudo docker stop 32a73b91ba01
+sudo docker start 32a73b91ba01
+sudo docker stop 32a73b91ba01
+sudo docker start 32a73b91ba01
+sudo docker rm STACK
+sudo docker stack rm
+sudo docker stack Stack rm
+sudo docker stack rm STACK
+sudo docker build --tag docker-gs-ping .
+sudo docker stack deploy STACK --compose-file docker-compose.yml 
+sudo docker stack rm STACK
+docker container up
+sudo docker compose up
+sudo docker stack deploy STACK --compose-file docker-compose.yml 
+curl http://localhost:8/
+sudo lsof -i:8
+ping 10.0.3.3
+ping 172.19.0.3
+curl 172.19.0.3:8
+curl http://172.19.0.3:8/
+curl 172.19.0.3:8
+curl 172.19.0.3
+ping 172.19.0.3
+ping 172.19.0.4
+sudo docker stack rm STACK
+sudo docker compose up
+sudo docker stack deploy STACK --compose-file docker-compose.yml 
+sudo docker stack rm STACK
+sudo docker stack deploy STACK --compose-file docker-compose.yml 
+sudo docker stack rm STACK
+sudo docker build --tag docker-gs-ping .
+sudo docker stack deploy STACK --compose-file docker-compose.yml 
+sudo docker stack rm STACK
+sudo docker build --tag docker-gs-ping .
+sudo docker stack deploy STACK --compose-file docker-compose.yml 
+sudo docker stack rm STACK
+history 
+history -> tmp.txt
+history -> txt.tsxt
+history -a
+history 
+history -> txt.tsxt
+history -> txt.txt
+history -w history.txt
