@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/hex"
-	"math/rand"
 )
 
 // the static number of bytes in a KademliaID
@@ -29,7 +28,7 @@ func NewKademliaID(data string) *KademliaID {
 func NewRandomKademliaID() *KademliaID {
 	newKademliaID := KademliaID{}
 	for i := 0; i < IDLength; i++ {
-		newKademliaID[i] = uint8(rand.Intn(256))
+		newKademliaID[i] = uint8(getRandNum())
 	}
 	return &newKademliaID
 }

@@ -32,6 +32,7 @@ func GetOutboundIP() net.IP {
     return localAddr.IP
 }
 
+//converts ip address to int
 func ip2int(ip net.IP) uint32 {
 	if len(ip) == 16 {
 		return binary.BigEndian.Uint32(ip[12:16])
@@ -39,18 +40,26 @@ func ip2int(ip net.IP) uint32 {
 	return binary.BigEndian.Uint32(ip)
 }
 
+//Returns random number, used in Kademlia ID generation
+func getRandNum() int{    
+    r := rGen.Intn(256)
+    return r
+}
+
+//Random number generator, use to get random numbers between nodes
+var rGen *rand.Rand
+
 func main() {
+    //initialize randomization of ID
+    randSource := rand.NewSource(time.Now().UnixNano())
+    rGen = rand.New(randSource)
+    NodeID := NewRandomKademliaID()
 
-    //node := NewNode()
-
-    s2 := rand.NewSource(int64(ip2int(GetOutboundIP())))
-    r1 := rand.New(s2)
-    //r := rand.Intn(256)
-    //r2 := rand.Intn(256)
 
     for {
-        r := r1.Intn(256)
         time.Sleep(2 * time.Second)
-        fmt.Println(r)
+        
+        fmt.Println(NodeID)
+        
     }
 }
