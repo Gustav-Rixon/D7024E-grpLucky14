@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"math/rand"
@@ -11,6 +13,11 @@ import (
 
 type Node struct {
 	ID *KademliaID
+}
+
+type Packet struct {
+	ID [20]byte
+	IP net.UDPAddr
 }
 
 func NewNode() Node {
@@ -75,19 +82,30 @@ func main() {
 func listen() {
 	localAddress, err := net.ResolveUDPAddr("udp", GetOutboundIP().String()+":80")
 	if err != nil {
-		log.Fatal("bruh")
+		log.Fatal(err)
 	}
 
 	fmt.Println("Beginning to listen on ", localAddress)
 
 	connection, err := net.ListenUDP("udp", localAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer connection.Close()
 
+	var message Packet
 	for {
 		inputBytes := make([]byte, 4096)
-		_, senderAddr, _ := connection.ReadFromUDP(inputBytes)
+		length, senderAddr, _ := connection.ReadFromUDP(inputBytes)
 
-		fmt.Println("Received message from ", senderAddr, "\n Msg: ", string(inputBytes))
+		buffer := bytes.NewBuffer(inputBytes[:length])
+		decoder := gob.NewDecoder(buffer)
+		err = decoder.Decode(&message)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String())
 	}
 }
 
@@ -115,10 +133,21 @@ func send() {
 		log.Fatal(connection, err)
 	}
 
-	message := []byte(string("hello from " + node.ID.String()[0:4] + " :))))"))
+	//message := []byte(string("hello from " + node.ID.String()[0:4] + " :))))"))
+	sendPack := Packet{}
+	sendPack.ID = *node.ID
+	sendPack.IP = *localAddr
+
+	var buffer bytes.Buffer
+	encoder := gob.NewEncoder(&buffer)
+	encodeErr := encoder.Encode(sendPack)
+	if encodeErr != nil {
+		log.Fatal(encodeErr)
+	}
+
 	for {
-		fmt.Println("Sending message")
-		_, err = connection.Write(message)
+		fmt.Println("Sending packet")
+		_, err = connection.Write(buffer.Bytes())
 		if err != nil {
 			fmt.Println("Write in broadcast localhost failed", err)
 		}
