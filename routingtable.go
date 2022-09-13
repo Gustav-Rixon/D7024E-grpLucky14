@@ -7,14 +7,14 @@ const bucketSize = 20
 // keeps a refrence contact of me and an array of buckets
 type RoutingTable struct {
 	me      Contact
-	buckets [IDLength * 8]*bucket
+	buckets [IDLength * 8]*bucket2
 }
 
 // NewRoutingTable returns a new instance of a RoutingTable
 func NewRoutingTable(me Contact) *RoutingTable {
 	routingTable := &RoutingTable{}
 	for i := 0; i < IDLength*8; i++ {
-		routingTable.buckets[i] = newBucket()
+		routingTable.buckets[i] = newBucket2()
 	}
 	routingTable.me = me
 	return routingTable

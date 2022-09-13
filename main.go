@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/gob"
+	"container/list"
 	"fmt"
 	"log"
 	"math/rand"
@@ -11,8 +12,10 @@ import (
 	"time"
 )
 
+//Used in main to call on NewRandomKademliaID function
 type Node struct {
 	ID *KademliaID
+	IP net.UDPAddr
 }
 
 type Packet struct {
@@ -20,9 +23,14 @@ type Packet struct {
 	IP net.UDPAddr
 }
 
-func NewNode() Node {
-	Id := NewRandomKademliaID()
-	return Node{Id}
+type Bucket struct {
+	list *list.List
+}
+
+func NewNode(id [20]byte, ip net.UDPAddr) Node {
+	Id := NewKademliaID(id)
+	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
+	return Node{Id, ip}
 }
 
 // Borrwed .)
@@ -59,13 +67,21 @@ var rGen *rand.Rand
 // The node itself
 var node Node
 
+//Bucket used for testing
+var b *Bucket
+
 func main() {
 	//initialize randomization of ID
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
 	node.ID = NewRandomKademliaID()
 
-	if GetOutboundIP().String() == "172.18.0.2" {
+	//BUCKET TESTING CODE
+	b = newBucket()
+	
+	//Use line to find IP address for base node
+	//fmt.Println(GetOutboundIP().String())
+	if GetOutboundIP().String() == "172.19.0.2" {
 		listen()
 	} else {
 		send()
@@ -76,6 +92,33 @@ func main() {
 
 		fmt.Println(node.ID)
 
+	}
+}
+
+func newBucket() *Bucket{
+	bucket := &Bucket{}
+	bucket.list = list.New()
+	return bucket
+}
+
+func addToBucket(b Bucket, p Packet) {
+	var element *list.Element
+	for e := b.list.Front(); e != nil; e = e.Next() {
+		nodeID := e.Value.(Node).ID
+
+		if (p).ID == *nodeID {
+			element = e
+		}
+	}
+	if element == nil {
+		if b.list.Len() < bucketSize {
+			var n = NewNode(p.ID, p.IP)
+			b.list.PushFront(n)
+			fmt.Println("New Node added to bucket")
+		}
+	} else {
+		b.list.MoveToFront(element)
+		fmt.Println("Node found in bucket, moving to front")
 	}
 }
 
@@ -104,13 +147,14 @@ func listen() {
 		if err != nil {
 			fmt.Println(err)
 		}
-
-		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String())
+		addToBucket(*b, message)
+		//NewNode(message.ID, message.IP)
+		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String(), "\n Sender ID: ", message.ID)
 	}
 }
 
 func send() {
-	dest_addr := "172.18.0.2"
+	dest_addr := "172.19.0.2"
 	port := ":80"
 
 	fmt.Printf("COMM: Broadcasting message to: %s%s\n", dest_addr, port)
