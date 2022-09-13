@@ -8,6 +8,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"reflect"
 	"time"
 )
 
@@ -53,6 +54,12 @@ func getRandNum() int {
 	return r
 }
 
+// Takes two binary numbers and does a XOR b
+func getDistance(a int, b int) int {
+	distance := a ^ b
+	return distance
+}
+
 // Random number generator, use to get random numbers between nodes
 var rGen *rand.Rand
 
@@ -64,18 +71,20 @@ func main() {
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
 	node.ID = NewRandomKademliaID()
-
-	if GetOutboundIP().String() == "172.18.0.2" {
-		listen()
-	} else {
-		send()
-	}
+	xt := reflect.TypeOf(node.ID).Kind()
+	xtx := reflect.TypeOf(*node.ID).Kind()
+	dist := getDistance(00, 10)
 
 	for {
-		time.Sleep(2 * time.Second)
-
+		fmt.Print("node Id:")
 		fmt.Println(node.ID)
-
+		fmt.Print("node Id type:")
+		fmt.Println(xt)
+		fmt.Println(*node.ID)
+		fmt.Println(xt)
+		fmt.Println(xtx)
+		fmt.Println(dist)
+		time.Sleep(1 * time.Second)
 	}
 }
 
