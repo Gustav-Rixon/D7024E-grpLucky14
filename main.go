@@ -3,10 +3,8 @@ package main
 import (
 	. "kademlia/internal/bucket"
 	. "kademlia/internal/kademliaid"
-	. "kademlia/internal/network"
 	. "kademlia/internal/node"
 	"log"
-	"math/rand"
 	"net"
 	"strconv"
 	"strings"
@@ -27,12 +25,6 @@ func GetOutboundIP() net.IP {
 	return localAddr.IP
 }
 
-// Returns random number, used in Kademlia ID generation
-func getRandNum() int {
-	r := rGen.Intn(256)
-	return r
-}
-
 func getDistance(NodeA []byte, NodeB []byte) KademliaID {
 	result := KademliaID{}
 	for i := 0; i < IDLength; i++ {
@@ -40,9 +32,6 @@ func getDistance(NodeA []byte, NodeB []byte) KademliaID {
 	}
 	return result
 }
-
-// Random number generator, use to get random numbers between nodes
-var rGen *rand.Rand
 
 // The node itself
 var node Node
@@ -52,8 +41,8 @@ var b *Bucket
 
 func main() {
 	// initialize randomization of ID
-	randSource := rand.NewSource(time.Now().UnixNano())
-	rGen = rand.New(randSource)
+	//randSource := rand.NewSource(time.Now().UnixNano())
+	//rGen = rand.New(randSource)
 	node.ID = NewRandomKademliaID()
 
 	// initialize network settings, communicate via port 80
