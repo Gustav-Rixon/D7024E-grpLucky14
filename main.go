@@ -66,9 +66,6 @@ var rGen *rand.Rand
 // The node itself
 var node Node
 
-// Bucket used for testing
-var b *Bucket
-
 // Routing table used for testing
 var rt *RoutingTable
 
@@ -77,9 +74,8 @@ func main() {
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
 
-	//BUCKET TESTING CODE
+	//ROUTINGTABLE TESTING CODE
 	node = createSelf()
-	b = newBucket()
 	rt = NewRoutingTable(node)
 
 	//Use line to find IP address for base node
@@ -124,6 +120,7 @@ func listen() {
 			fmt.Println(err)
 		}
 
+		//ROUTING TESTING
 		//Adds a node into the routing table
 		rt.AddContact(message.ID, message.IP)
 
