@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"math/rand"
 	"net"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -15,19 +16,24 @@ type Node struct {
 	IP net.UDPAddr
 }
 
-func NewNode() Node {
-	Id := NewRandomKademliaID()
-	return Node{Id}
-=======
-type Packet struct {
-	ID [IDLength]byte
-	IP net.UDPAddr
-}
-
 func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
 	Id := NewKademliaID(id)
 	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
 	return Node{Id, ip}
+}
+
+// Borrwed .)
+// Get preferred outbound ip of this machine
+func GetOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
 }
 
 // Returns random number, used in Kademlia ID generation
@@ -36,10 +42,12 @@ func getRandNum() int {
 	return r
 }
 
-// Takes two binary numbers and does a XOR b
-func getDistance(a int, b int) int {
-	distance := a ^ b
-	return distance
+func getDistance(NodeA []byte, NodeB []byte) KademliaID {
+	result := KademliaID{}
+	for i := 0; i < IDLength; i++ {
+		result[i] = NodeA[i] ^ NodeB[i]
+	}
+	return result
 }
 
 // Random number generator, use to get random numbers between nodes
@@ -52,27 +60,18 @@ var node Node
 var b *Bucket
 
 func main() {
+	NodeId1 := []byte{0, 0}
+	NodeId2 := []byte{1, 1}
+	m := getDistance(NodeId1, NodeId2)
+	fmt.Println(m)
+}
+
+/*
+func main() {
 	// initialize randomization of ID
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
 	node.ID = NewRandomKademliaID()
-
-	xt := reflect.TypeOf(node.ID).Kind()
-	xtx := reflect.TypeOf(*node.ID).Kind()
-	dist := getDistance(00, 10)
-
-	for {
-		fmt.Print("node Id:")
-		fmt.Println(node.ID)
-		fmt.Print("node Id type:")
-		fmt.Println(xt)
-		fmt.Println(*node.ID)
-		fmt.Println(xt)
-		fmt.Println(xtx)
-		fmt.Println(dist)
-		time.Sleep(1 * time.Second)
-	}
-}
 
 	// initialize network settings, communicate via port 80
 	initNetwork(80)
@@ -80,14 +79,6 @@ func main() {
 	if netInfo.localIPAddr.Mask(net.IPv4Mask(0, 0, 255, 255)).String() == "0.0.0.2" {
 		// Lowest IP address, assign supernode
 		go listen()
-	//BUCKET TESTING CODE
-	b = newBucket()
-
-	//Use line to find IP address for base node
-	//fmt.Println(GetOutboundIP().String())
-	if GetOutboundIP().String() == "172.19.0.2" {
-		listen()
-
 	} else {
 		go sendLoop()
 	}
@@ -97,6 +88,7 @@ func main() {
 		time.Sleep(time.Second / 2)
 	}
 }
+*/
 
 func sendLoop() {
 	networkPrefix1, _ := strconv.Atoi(strings.Split(netInfo.localIPAddr.String(), ".")[0])
@@ -106,60 +98,6 @@ func sendLoop() {
 		// Forever ping the supernode
 		sendPing(supernodeAddr)
 
-		buffer := bytes.NewBuffer(inputBytes[:length])
-		decoder := gob.NewDecoder(buffer)
-		err = decoder.Decode(&message)
-		if err != nil {
-			fmt.Println(err)
-		}
-		b.addToBucket(message)
-		//NewNode(message.ID, message.IP)
-		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String(), "\n Sender ID: ", message.ID)
-	}
-}
-
-func send() {
-	dest_addr := "172.19.0.2"
-	port := ":80"
-
-	fmt.Printf("COMM: Broadcasting message to: %s%s\n", dest_addr, port)
-	localAddr, err := net.ResolveUDPAddr("udp", GetOutboundIP().String()+port)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	sendAddr, err := net.ResolveUDPAddr("udp", dest_addr+port)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	connection, err := net.DialUDP("udp", localAddr, sendAddr)
-	defer connection.Close()
-
-	if err != nil {
-		log.Fatal(connection, err)
-	}
-
-	//message := []byte(string("hello from " + node.ID.String()[0:4] + " :))))"))
-	sendPack := Packet{}
-	sendPack.ID = node.ID
-	sendPack.IP = *localAddr
-
-	var buffer bytes.Buffer
-	encoder := gob.NewEncoder(&buffer)
-	encodeErr := encoder.Encode(sendPack)
-	if encodeErr != nil {
-		log.Fatal(encodeErr)
-	}
-
-	for {
-		fmt.Println("Sending packet")
-		_, err = connection.Write(buffer.Bytes())
-		if err != nil {
-			fmt.Println("Write in broadcast localhost failed", err)
-		}
 		time.Sleep(2 * time.Second)
 	}
 }
