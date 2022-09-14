@@ -1,10 +1,9 @@
 package main
 
-import (
-	"fmt"
-	"testing"
-)
+//"fmt"
+//"testing"
 
+/*
 func TestRoutingTable(t *testing.T) {
 	rt := NewRoutingTable(NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8000"))
 
@@ -20,3 +19,4 @@ func TestRoutingTable(t *testing.T) {
 		fmt.Println(contacts[i].String())
 	}
 }
+*/

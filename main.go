@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/gob"
-	"container/list"
 	"fmt"
 	"log"
 	"math/rand"
@@ -12,7 +11,7 @@ import (
 	"time"
 )
 
-//Used in main to call on NewRandomKademliaID function
+// Used in main to call on NewRandomKademliaID function
 type Node struct {
 	ID *KademliaID
 	IP net.UDPAddr
@@ -21,10 +20,6 @@ type Node struct {
 type Packet struct {
 	ID [20]byte
 	IP net.UDPAddr
-}
-
-type Bucket struct {
-	list *list.List
 }
 
 func NewNode(id [20]byte, ip net.UDPAddr) Node {
@@ -67,7 +62,7 @@ var rGen *rand.Rand
 // The node itself
 var node Node
 
-//Bucket used for testing
+// Bucket used for testing
 var b *Bucket
 
 func main() {
@@ -78,7 +73,7 @@ func main() {
 
 	//BUCKET TESTING CODE
 	b = newBucket()
-	
+
 	//Use line to find IP address for base node
 	//fmt.Println(GetOutboundIP().String())
 	if GetOutboundIP().String() == "172.19.0.2" {
@@ -92,37 +87,6 @@ func main() {
 
 		fmt.Println(node.ID)
 
-	}
-}
-
-//Creates a bucket, should probably be moved into another file later
-func newBucket() *Bucket{
-	bucket := &Bucket{}
-	bucket.list = list.New()
-	return bucket
-}
-
-//Searches through a bucket for an ID from Packet, if the ID is found the entry corresponding to the ID get moved to the front of the buckets list
-//OTHERWISE creates a new node instance and places it into the bucket
-//THIS SHOULD BE CALLED in the listen function every time the node receives a message as per the kademlia specification.
-func addToBucket(b Bucket, p Packet) {
-	var element *list.Element
-	for e := b.list.Front(); e != nil; e = e.Next() {
-		nodeID := e.Value.(Node).ID
-
-		if (p).ID == *nodeID {
-			element = e
-		}
-	}
-	if element == nil {
-		if b.list.Len() < bucketSize {
-			var n = NewNode(p.ID, p.IP)
-			b.list.PushFront(n)
-			fmt.Println("New Node added to bucket")
-		}
-	} else {
-		b.list.MoveToFront(element)
-		fmt.Println("Node found in bucket, moving to front")
 	}
 }
 

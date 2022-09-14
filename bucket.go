@@ -2,10 +2,46 @@ package main
 
 import (
 	"container/list"
+	"fmt"
 )
 
 // bucket definition
 // contains a List
+type Bucket struct {
+	list *list.List
+}
+
+// Creates a bucket
+func newBucket() *Bucket {
+	bucket := &Bucket{}
+	bucket.list = list.New()
+	return bucket
+}
+
+// Searches through a bucket for an ID from Packet, if the ID is found the entry corresponding to the ID get moved to the front of the buckets list
+// OTHERWISE creates a new node instance and places it into the bucket
+// THIS SHOULD BE CALLED in the listen function every time the node receives a message as per the kademlia specification.
+func addToBucket(b Bucket, p Packet) {
+	var element *list.Element
+	for e := b.list.Front(); e != nil; e = e.Next() {
+		nodeID := e.Value.(Node).ID
+
+		if (p).ID == *nodeID {
+			element = e
+		}
+	}
+	if element == nil {
+		if b.list.Len() < bucketSize {
+			var n = NewNode(p.ID, p.IP)
+			b.list.PushFront(n)
+			fmt.Println("New Node added to bucket")
+		}
+	} else {
+		b.list.MoveToFront(element)
+		fmt.Println("Node found in bucket, moving to front")
+	}
+}
+
 type bucket2 struct {
 	list *list.List
 }
@@ -38,7 +74,7 @@ func (bucket *bucket2) AddContact(contact Contact) {
 	}
 }
 
-// GetContactAndCalcDistance returns an array of Contacts where 
+// GetContactAndCalcDistance returns an array of Contacts where
 // the distance has already been calculated
 func (bucket *bucket2) GetContactAndCalcDistance(target *KademliaID) []Contact {
 	var contacts []Contact
