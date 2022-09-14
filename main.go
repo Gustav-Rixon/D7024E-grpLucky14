@@ -22,12 +22,6 @@ type Packet struct {
 	IP net.UDPAddr
 }
 
-func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
-	Id := NewKademliaID(id)
-	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
-	return Node{Id, ip}
-}
-
 // Borrwed .)
 // Get preferred outbound ip of this machine
 func GetOutboundIP() net.IP {
@@ -56,6 +50,16 @@ func getRandNum() int {
 	return r
 }
 
+// Creates a node instance of itself
+func createSelf() Node {
+	localAddress, err := net.ResolveUDPAddr("udp", GetOutboundIP().String()+":80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var me = NewNode(node.ID, *localAddress)
+	return me
+}
+
 // Random number generator, use to get random numbers between nodes
 var rGen *rand.Rand
 
@@ -65,6 +69,9 @@ var node Node
 // Bucket used for testing
 var b *Bucket
 
+// Routing table used for testing
+var rt *RoutingTable
+
 func main() {
 	//initialize randomization of ID
 	randSource := rand.NewSource(time.Now().UnixNano())
@@ -72,7 +79,9 @@ func main() {
 	node.ID = NewRandomKademliaID()
 
 	//BUCKET TESTING CODE
+	node = createSelf()
 	b = newBucket()
+	rt = NewRoutingTable(node)
 
 	//Use line to find IP address for base node
 	//fmt.Println(GetOutboundIP().String())
@@ -118,6 +127,7 @@ func listen() {
 		b.addToBucket(message)
 		//NewNode(message.ID, message.IP)
 		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String(), "\n Sender ID: ", message.ID)
+		//fmt.Println("Routing table contains: ", len(rt.buckets), " buckets")
 	}
 }
 
