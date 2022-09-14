@@ -12,25 +12,24 @@ type KademliaID [IDLength]byte
 
 // Förmodligen för testing?
 // NewKademliaID returns a new instance of a KademliaID based on the string input
-func NewKademliaID(data string) *KademliaID {
-	decoded, _ := hex.DecodeString(data)
+func NewKademliaID(id [IDLength]byte) [IDLength]byte {
 
 	newKademliaID := KademliaID{}
 	for i := 0; i < IDLength; i++ {
-		newKademliaID[i] = decoded[i]
+		newKademliaID[i] = id[i]
 	}
 
-	return &newKademliaID
+	return newKademliaID
 }
 
 // NewRandomKademliaID returns a new instance of a random KademliaID,
 // change this to a better version if you like
-func NewRandomKademliaID() *KademliaID {
+func NewRandomKademliaID() [IDLength]byte {
 	newKademliaID := KademliaID{}
 	for i := 0; i < IDLength; i++ {
 		newKademliaID[i] = uint8(getRandNum())
 	}
-	return &newKademliaID
+	return newKademliaID
 }
 
 // Less returns true if kademliaID < otherKademliaID (bitwise)
@@ -53,7 +52,7 @@ func (kademliaID KademliaID) Equals(otherKademliaID *KademliaID) bool {
 	return true
 }
 
-// CalcDistance returns a new instance of a KademliaID that is built 
+// CalcDistance returns a new instance of a KademliaID that is built
 // through a bitwise XOR operation betweeen kademliaID and target
 func (kademliaID KademliaID) CalcDistance(target *KademliaID) *KademliaID {
 	result := KademliaID{}

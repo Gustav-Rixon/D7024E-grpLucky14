@@ -11,18 +11,21 @@ import (
 	"time"
 )
 
+// Used in main to call on NewRandomKademliaID function
 type Node struct {
-	ID *KademliaID
-}
-
-type Packet struct {
-	ID [20]byte
+	ID [IDLength]byte
 	IP net.UDPAddr
 }
 
-func NewNode() Node {
-	Id := NewRandomKademliaID()
-	return Node{Id}
+type Packet struct {
+	ID [IDLength]byte
+	IP net.UDPAddr
+}
+
+func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
+	Id := NewKademliaID(id)
+	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
+	return Node{Id, ip}
 }
 
 // Borrwed .)
@@ -59,13 +62,21 @@ var rGen *rand.Rand
 // The node itself
 var node Node
 
+// Bucket used for testing
+var b *Bucket
+
 func main() {
 	//initialize randomization of ID
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
 	node.ID = NewRandomKademliaID()
 
-	if GetOutboundIP().String() == "172.18.0.2" {
+	//BUCKET TESTING CODE
+	b = newBucket()
+
+	//Use line to find IP address for base node
+	//fmt.Println(GetOutboundIP().String())
+	if GetOutboundIP().String() == "172.19.0.2" {
 		listen()
 	} else {
 		send()
@@ -104,13 +115,14 @@ func listen() {
 		if err != nil {
 			fmt.Println(err)
 		}
-
-		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String())
+		b.addToBucket(message)
+		//NewNode(message.ID, message.IP)
+		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String(), "\n Sender ID: ", message.ID)
 	}
 }
 
 func send() {
-	dest_addr := "172.18.0.2"
+	dest_addr := "172.19.0.2"
 	port := ":80"
 
 	fmt.Printf("COMM: Broadcasting message to: %s%s\n", dest_addr, port)
@@ -135,7 +147,7 @@ func send() {
 
 	//message := []byte(string("hello from " + node.ID.String()[0:4] + " :))))"))
 	sendPack := Packet{}
-	sendPack.ID = *node.ID
+	sendPack.ID = node.ID
 	sendPack.IP = *localAddr
 
 	var buffer bytes.Buffer
