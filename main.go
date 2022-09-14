@@ -1,7 +1,10 @@
 package main
 
 import (
-	"fmt"
+	. "kademlia/internal/bucket"
+	. "kademlia/internal/kademliaid"
+	. "kademlia/internal/network"
+	. "kademlia/internal/node"
 	"log"
 	"math/rand"
 	"net"
@@ -9,18 +12,6 @@ import (
 	"strings"
 	"time"
 )
-
-// Used in main to call on NewRandomKademliaID function
-type Node struct {
-	ID [IDLength]byte
-	IP net.UDPAddr
-}
-
-func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
-	Id := NewKademliaID(id)
-	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
-	return Node{Id, ip}
-}
 
 // Borrwed .)
 // Get preferred outbound ip of this machine
@@ -60,14 +51,6 @@ var node Node
 var b *Bucket
 
 func main() {
-	NodeId1 := []byte{0, 0}
-	NodeId2 := []byte{1, 1}
-	m := getDistance(NodeId1, NodeId2)
-	fmt.Println(m)
-}
-
-/*
-func main() {
 	// initialize randomization of ID
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
@@ -88,7 +71,6 @@ func main() {
 		time.Sleep(time.Second / 2)
 	}
 }
-*/
 
 func sendLoop() {
 	networkPrefix1, _ := strconv.Atoi(strings.Split(netInfo.localIPAddr.String(), ".")[0])
