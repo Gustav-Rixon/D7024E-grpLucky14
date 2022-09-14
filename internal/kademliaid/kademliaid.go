@@ -2,6 +2,7 @@ package kademliaid
 
 import (
 	"encoding/hex"
+	"math/rand"
 )
 
 // the static number of bytes in a KademliaID
@@ -10,6 +11,7 @@ const IDLength = 20
 // type definition of a KademliaID
 type KademliaID [IDLength]byte
 
+/*
 // Förmodligen för testing?
 // NewKademliaID returns a new instance of a KademliaID based on the string input
 func NewKademliaID(id [IDLength]byte) [IDLength]byte {
@@ -20,6 +22,16 @@ func NewKademliaID(id [IDLength]byte) [IDLength]byte {
 	}
 
 	return newKademliaID
+}
+*/
+
+// Random number generator, use to get random numbers between nodes
+var rGen *rand.Rand
+
+// Returns random number, used in Kademlia ID generation
+func getRandNum() int {
+	r := rGen.Intn(256)
+	return r
 }
 
 // NewRandomKademliaID returns a new instance of a random KademliaID,
