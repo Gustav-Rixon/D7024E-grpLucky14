@@ -47,7 +47,7 @@ func main() {
 
 	for {
 		//fmt.Println("Alive") // Debug printout to ensure node is alive
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second / 2)
 	}
 }
 

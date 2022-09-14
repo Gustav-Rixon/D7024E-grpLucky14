@@ -71,8 +71,20 @@ func listen() {
 	}
 	defer connection.Close()
 
+	var sendPack Packet
+	sendPack.ID = *node.ID
+	sendPack.IP = *localAddress
+
+	var replyBuffer bytes.Buffer
+	encoder := gob.NewEncoder(&replyBuffer)
+	encodeErr := encoder.Encode(sendPack)
+	if encodeErr != nil {
+		log.Fatal(encodeErr)
+	}
+
 	var message Packet
 	for {
+		// Could change this into some general handling of different types of packets
 		inputBytes := make([]byte, 4096)
 		length, senderAddr, _ := connection.ReadFromUDP(inputBytes)
 
@@ -84,10 +96,15 @@ func listen() {
 		}
 
 		fmt.Println("Received message from ", senderAddr, "\n Sender ID: ", hex.EncodeToString(message.ID[:]))
+		fmt.Println("Sending reply...")
+		_, err = connection.WriteToUDP(replyBuffer.Bytes(), senderAddr)
+		if err != nil {
+			fmt.Println("Ping failed: ", err)
+		}
 	}
 }
 
-// Function for pinging a given IP
+// Function for pinging and awaiting reply from a given IP
 // NOTE: Expects IP to exclude port number
 func sendPing(destIP net.IP) {
 	localAddr, err := net.ResolveUDPAddr("udp", netInfo.localIPAddr.String()+netInfo.networkPort)
@@ -122,6 +139,21 @@ func sendPing(destIP net.IP) {
 	if err != nil {
 		fmt.Println("Ping failed: ", err)
 	}
+
+	fmt.Println("Awaiting reply...")
+	var message Packet
+
+	inputBytes := make([]byte, 4096)
+	length, senderAddr, _ := connection.ReadFromUDP(inputBytes)
+
+	replyBuffer := bytes.NewBuffer(inputBytes[:length])
+	decoder := gob.NewDecoder(replyBuffer)
+	err = decoder.Decode(&message)
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+
+	fmt.Println("Received reply from ", senderAddr, "\n Sender ID: ", hex.EncodeToString(message.ID[:]))
 }
 
 func (info NetworkInfo) SendFindContactMessage(contact *Contact) {
