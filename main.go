@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"net"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -35,6 +36,12 @@ func getRandNum() int {
 	return r
 }
 
+// Takes two binary numbers and does a XOR b
+func getDistance(a int, b int) int {
+	distance := a ^ b
+	return distance
+}
+
 // Random number generator, use to get random numbers between nodes
 var rGen *rand.Rand
 
@@ -50,6 +57,22 @@ func main() {
 	rGen = rand.New(randSource)
 	node.ID = NewRandomKademliaID()
 
+	xt := reflect.TypeOf(node.ID).Kind()
+	xtx := reflect.TypeOf(*node.ID).Kind()
+	dist := getDistance(00, 10)
+
+	for {
+		fmt.Print("node Id:")
+		fmt.Println(node.ID)
+		fmt.Print("node Id type:")
+		fmt.Println(xt)
+		fmt.Println(*node.ID)
+		fmt.Println(xt)
+		fmt.Println(xtx)
+		fmt.Println(dist)
+		time.Sleep(1 * time.Second)
+	}
+}
 
 	// initialize network settings, communicate via port 80
 	initNetwork(80)
@@ -57,7 +80,6 @@ func main() {
 	if netInfo.localIPAddr.Mask(net.IPv4Mask(0, 0, 255, 255)).String() == "0.0.0.2" {
 		// Lowest IP address, assign supernode
 		go listen()
-=======
 	//BUCKET TESTING CODE
 	b = newBucket()
 
@@ -84,7 +106,6 @@ func sendLoop() {
 		// Forever ping the supernode
 		sendPing(supernodeAddr)
 
-=======
 		buffer := bytes.NewBuffer(inputBytes[:length])
 		decoder := gob.NewDecoder(buffer)
 		err = decoder.Decode(&message)
