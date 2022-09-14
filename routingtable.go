@@ -1,5 +1,7 @@
 package main
 
+import "net"
+
 const bucketSize = 20
 
 // RoutingTable definition
@@ -17,6 +19,12 @@ func NewRoutingTable(me Node) *RoutingTable {
 	}
 	routingTable.me = me
 	return routingTable
+}
+
+func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
+	Id := NewKademliaID(id)
+	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
+	return Node{Id, ip}
 }
 
 // AddContact add a new contact to the correct Bucket

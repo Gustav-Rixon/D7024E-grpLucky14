@@ -24,22 +24,26 @@ type Packet struct {
 	IP net.UDPAddr
 }
 
-func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
-	Id := NewKademliaID(id)
-	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
-	return Node{Id, ip}
-}
-
 // Returns random number, used in Kademlia ID generation
 func getRandNum() int {
 	r := rGen.Intn(256)
 	return r
 }
 
+
 // Takes two binary numbers and does a XOR b
 func getDistance(a int, b int) int {
 	distance := a ^ b
 	return distance
+}
+// Creates a node instance of itself
+func createSelf() Node {
+	localAddress, err := net.ResolveUDPAddr("udp", GetOutboundIP().String()+":80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var me = NewNode(node.ID, *localAddress)
+	return me
 }
 
 // Random number generator, use to get random numbers between nodes
@@ -50,6 +54,9 @@ var node Node
 
 // Bucket used for testing
 var b *Bucket
+
+// Routing table used for testing
+var rt *RoutingTable
 
 func main() {
 	// initialize randomization of ID
@@ -81,7 +88,9 @@ func main() {
 		// Lowest IP address, assign supernode
 		go listen()
 	//BUCKET TESTING CODE
+	node = createSelf()
 	b = newBucket()
+	rt = NewRoutingTable(node)
 
 	//Use line to find IP address for base node
 	//fmt.Println(GetOutboundIP().String())
@@ -115,6 +124,7 @@ func sendLoop() {
 		b.addToBucket(message)
 		//NewNode(message.ID, message.IP)
 		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String(), "\n Sender ID: ", message.ID)
+		//fmt.Println("Routing table contains: ", len(rt.buckets), " buckets")
 	}
 }
 
