@@ -1,13 +1,10 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
-	"encoding/gob"
-	"fmt"
-	"log"
 	"math/rand"
 	"net"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,6 +14,10 @@ type Node struct {
 	IP net.UDPAddr
 }
 
+func NewNode() Node {
+	Id := NewRandomKademliaID()
+	return Node{Id}
+=======
 type Packet struct {
 	ID [IDLength]byte
 	IP net.UDPAddr
@@ -26,28 +27,6 @@ func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
 	Id := NewKademliaID(id)
 	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
 	return Node{Id, ip}
-}
-
-// Borrwed .)
-// Get preferred outbound ip of this machine
-func GetOutboundIP() net.IP {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
-	return localAddr.IP
-}
-
-// converts ip address to int
-func ip2int(ip net.IP) uint32 {
-	if len(ip) == 16 {
-		return binary.BigEndian.Uint32(ip[12:16])
-	}
-	return binary.BigEndian.Uint32(ip)
 }
 
 // Returns random number, used in Kademlia ID generation
@@ -66,11 +45,19 @@ var node Node
 var b *Bucket
 
 func main() {
-	//initialize randomization of ID
+	// initialize randomization of ID
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
 	node.ID = NewRandomKademliaID()
 
+
+	// initialize network settings, communicate via port 80
+	initNetwork(80)
+
+	if netInfo.localIPAddr.Mask(net.IPv4Mask(0, 0, 255, 255)).String() == "0.0.0.2" {
+		// Lowest IP address, assign supernode
+		go listen()
+=======
 	//BUCKET TESTING CODE
 	b = newBucket()
 
@@ -78,37 +65,26 @@ func main() {
 	//fmt.Println(GetOutboundIP().String())
 	if GetOutboundIP().String() == "172.19.0.2" {
 		listen()
+
 	} else {
-		send()
+		go sendLoop()
 	}
 
 	for {
-		time.Sleep(2 * time.Second)
-
-		fmt.Println(node.ID)
-
+		//fmt.Println("Alive") // Debug printout to ensure node is alive
+		time.Sleep(time.Second / 2)
 	}
 }
 
-func listen() {
-	localAddress, err := net.ResolveUDPAddr("udp", GetOutboundIP().String()+":80")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Beginning to listen on ", localAddress)
-
-	connection, err := net.ListenUDP("udp", localAddress)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer connection.Close()
-
-	var message Packet
+func sendLoop() {
+	networkPrefix1, _ := strconv.Atoi(strings.Split(netInfo.localIPAddr.String(), ".")[0])
+	networkPrefix2, _ := strconv.Atoi(strings.Split(netInfo.localIPAddr.String(), ".")[1])
+	supernodeAddr := net.IPv4(byte(networkPrefix1), byte(networkPrefix2), 0, 2)
 	for {
-		inputBytes := make([]byte, 4096)
-		length, senderAddr, _ := connection.ReadFromUDP(inputBytes)
+		// Forever ping the supernode
+		sendPing(supernodeAddr)
 
+=======
 		buffer := bytes.NewBuffer(inputBytes[:length])
 		decoder := gob.NewDecoder(buffer)
 		err = decoder.Decode(&message)
