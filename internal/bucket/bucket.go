@@ -7,8 +7,9 @@ import (
 	. "kademlia/internal/contact"
 	. "kademlia/internal/kademliaid"
 	. "kademlia/internal/network"
-	. "kademlia/internal/routingtable"
 )
+
+const bucketSize = 20
 
 // bucket definition
 // contains a List
