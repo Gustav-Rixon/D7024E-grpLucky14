@@ -156,6 +156,7 @@ func sendPing(destIP net.IP) {
 	fmt.Println("Received reply from ", senderAddr, "\n Sender ID: ", hex.EncodeToString(message.ID[:]))
 }
 
+/*
 func (info NetworkInfo) SendFindContactMessage(contact *Contact) {
 	// TODO
 }
@@ -167,3 +168,4 @@ func (info NetworkInfo) SendFindDataMessage(hash string) {
 func (info NetworkInfo) SendStoreMessage(data []byte) {
 	// TODO
 }
+*/
