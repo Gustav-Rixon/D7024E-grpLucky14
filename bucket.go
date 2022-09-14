@@ -3,6 +3,7 @@ package main
 import (
 	"container/list"
 	"fmt"
+	"net"
 )
 
 // bucket definition
@@ -21,20 +22,22 @@ func newBucket() *Bucket {
 // Searches through a bucket for an ID from Packet, if the ID is found the entry corresponding to the ID get moved to the front of the buckets list
 // OTHERWISE creates a new node instance and places it into the bucket
 // THIS SHOULD BE CALLED in the listen function every time the node receives a message as per the kademlia specification.
-func (b Bucket) addToBucket(p Packet) {
+func (b Bucket) addToBucket(id [IDLength]byte, ip net.UDPAddr) {
 	var element *list.Element
 	for e := b.list.Front(); e != nil; e = e.Next() {
 		nodeID := e.Value.(Node).ID
 
-		if (p).ID == nodeID {
+		if id == nodeID {
 			element = e
 		}
 	}
 	if element == nil {
 		if b.list.Len() < bucketSize {
-			var n = NewNode(p.ID, p.IP)
+			var n = NewNode(id, ip)
 			b.list.PushFront(n)
 			fmt.Println("New Node added to bucket")
+			var res = n.CalcDistance(rt.me.ID)
+			fmt.Println("Distance from me to node = ", res)
 		}
 	} else {
 		b.list.MoveToFront(element)

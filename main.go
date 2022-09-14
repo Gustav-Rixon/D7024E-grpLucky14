@@ -56,7 +56,7 @@ func createSelf() Node {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var me = NewNode(node.ID, *localAddress)
+	var me = NewNode(NewRandomKademliaID(), *localAddress)
 	return me
 }
 
@@ -76,7 +76,6 @@ func main() {
 	//initialize randomization of ID
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
-	node.ID = NewRandomKademliaID()
 
 	//BUCKET TESTING CODE
 	node = createSelf()
@@ -124,7 +123,10 @@ func listen() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		b.addToBucket(message)
+
+		//Adds a node into the routing table
+		rt.AddContact(message.ID, message.IP)
+
 		//NewNode(message.ID, message.IP)
 		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String(), "\n Sender ID: ", message.ID)
 		//fmt.Println("Routing table contains: ", len(rt.buckets), " buckets")
