@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/binary"
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
@@ -12,12 +11,13 @@ import (
 
 type Packet struct {
 	ID [20]byte
-	IP net.UDPAddr
+	IP net.IP
 }
 
 type NetworkInfo struct {
 	localIPAddr net.IP
-	networkPort string
+	listenPort  string
+	sendPort    string
 }
 
 // Borrowed code from Stack Overflow
@@ -36,97 +36,77 @@ func getOutboundIP() net.IP {
 
 // Also borrowed from Stack Overflow
 // Converts an ip address to int
-func ip2int(ip net.IP) uint32 {
+/* func ip2int(ip net.IP) uint32 {
 	if len(ip) == 16 {
 		return binary.BigEndian.Uint32(ip[12:16])
 	}
 	return binary.BigEndian.Uint32(ip)
-}
+} */
 
+// Global variable holding all useful container network information for communication between containers
 var netInfo NetworkInfo
 
-// Gets initial network subnet info, and takes a desired port used for communication
-func initNetwork(port int) {
+// Gets initial network subnet info, and takes desired ports for i/o
+func initNetwork(listenPort int, sendPort int) {
 	var networkInfo NetworkInfo
 	networkInfo.localIPAddr = getOutboundIP()
-	networkInfo.networkPort = ":" + fmt.Sprint(port) // Stored in format :port for ease of concatenating
-	if port < 0 {
+	networkInfo.listenPort = ":" + fmt.Sprint(listenPort) // Stored in format :port for ease of concatenating
+	networkInfo.sendPort = ":" + fmt.Sprint(sendPort)     // Stored in format :port for ease of concatenating
+	if listenPort < 0 || sendPort < 0 {
 		log.Panicln("Invalid port number")
 	}
 	netInfo = networkInfo
 }
 
+// Basic function for eternally listening for Packets on a single port
 func listen() {
-	fmt.Println("Beginning to listen on:", netInfo.localIPAddr.String()+netInfo.networkPort)
-	localAddress, err := net.ResolveUDPAddr("udp", netInfo.localIPAddr.String()+netInfo.networkPort)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Beginning to listen on ", localAddress)
-
-	connection, err := net.ListenUDP("udp", localAddress)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer connection.Close()
-
-	var sendPack Packet
-	sendPack.ID = *node.ID
-	sendPack.IP = *localAddress
-
-	var replyBuffer bytes.Buffer
-	encoder := gob.NewEncoder(&replyBuffer)
-	encodeErr := encoder.Encode(sendPack)
-	if encodeErr != nil {
-		log.Fatal(encodeErr)
-	}
-
-	var message Packet
+	fmt.Println("Beginning to listen on ", netInfo.localIPAddr)
 	for {
-		// Could change this into some general handling of different types of packets
-		inputBytes := make([]byte, 4096)
-		length, senderAddr, _ := connection.ReadFromUDP(inputBytes)
-
-		buffer := bytes.NewBuffer(inputBytes[:length])
-		decoder := gob.NewDecoder(buffer)
-		err = decoder.Decode(&message)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Println("Received message from ", senderAddr, "\n Sender ID: ", hex.EncodeToString(message.ID[:]))
+		message, senderAddr := awaitPacket()
+		fmt.Println("Received message from ", senderAddr.IP.String(), "\n Sender ID: ", hex.EncodeToString(message.ID[:]))
 		fmt.Println("Sending reply...")
-		_, err = connection.WriteToUDP(replyBuffer.Bytes(), senderAddr)
-		if err != nil {
-			fmt.Println("Ping failed: ", err)
-		}
+		sendPacket(senderAddr.IP)
 	}
 }
 
 // Function for pinging and awaiting reply from a given IP
 // NOTE: Expects IP to exclude port number
-func sendPing(destIP net.IP) {
-	localAddr, err := net.ResolveUDPAddr("udp", netInfo.localIPAddr.String()+netInfo.networkPort)
+func Ping(destIP net.IP) {
+	fmt.Println("Pinging ", destIP)
+	sendPacket(destIP)
+
+	fmt.Println("Awaiting reply...")
+	message, senderAddr := awaitPacket()
+	fmt.Println("Received reply from ", senderAddr.String(), "\n Sender ID: ", hex.EncodeToString(message.ID[:]))
+}
+
+// Function for sending a (hardcoded) packet with current node's information to a given IP using UDP communication
+func sendPacket(destIP net.IP) {
+
+	// Begin by resolving the UDP address we should send from
+	localAddr, err := net.ResolveUDPAddr("udp", netInfo.localIPAddr.String()+netInfo.sendPort)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	sendAddr, err := net.ResolveUDPAddr("udp", destIP.String()+netInfo.networkPort)
+	// Resolve destination UDP address
+	destAddr, err := net.ResolveUDPAddr("udp", destIP.String()+netInfo.listenPort)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	connection, err := net.DialUDP("udp", localAddr, sendAddr)
+	// Establish UDP connection
+	connection, err := net.DialUDP("udp", localAddr, destAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer connection.Close()
 
+	// Initialize Packet and fill it with relevant info
 	var sendPack Packet
-	sendPack.ID = *node.ID
-	sendPack.IP = *localAddr
+	sendPack.ID = node.ID
+	sendPack.IP = netInfo.localIPAddr
 
+	// Encode Packet struct in order to send it across UDP connection
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer)
 	encodeErr := encoder.Encode(sendPack)
@@ -134,26 +114,52 @@ func sendPing(destIP net.IP) {
 		log.Fatal(encodeErr)
 	}
 
-	fmt.Println("Pinging: ", destIP.String())
+	// Send Packet struct
 	_, err = connection.Write(buffer.Bytes())
 	if err != nil {
 		fmt.Println("Ping failed: ", err)
 	}
 
-	fmt.Println("Awaiting reply...")
+	connection.Close()
+}
+
+// Basic function for awaiting a single Packet, returns the Packet it gets along with the UDP address that sent it
+//
+// NOTE: MAKE SURE TO NEVER HAVE MORE THAN ONE AWAITPACKET ALIVE AT A TIME, waiting on the same port is highly illegal
+// and will crash everything :(
+func awaitPacket() (Packet, *net.UDPAddr) {
+
+	// Resolve UDP address that we should listen on
+	localAddress, err := net.ResolveUDPAddr("udp", netInfo.localIPAddr.String()+netInfo.listenPort)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Begin listening
+	connection, err := net.ListenUDP("udp", localAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Declare Packet
 	var message Packet
 
+	// --- Could change everything below into some general handling of different types of packets ---
+
+	// Create byte array "buffer" for storing incoming Packet
 	inputBytes := make([]byte, 4096)
 	length, senderAddr, _ := connection.ReadFromUDP(inputBytes)
 
-	replyBuffer := bytes.NewBuffer(inputBytes[:length])
-	decoder := gob.NewDecoder(replyBuffer)
-	err = decoder.Decode(&message)
+	// Decode encoded Packet back into struct
+	buffer := bytes.NewBuffer(inputBytes[:length])
+	decoder := gob.NewDecoder(buffer)
+	err = decoder.Decode(&message) // <-- Stores the decoded Packet in message variable
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Println("Error decoding incoming packet: ", err)
 	}
 
-	fmt.Println("Received reply from ", senderAddr, "\n Sender ID: ", hex.EncodeToString(message.ID[:]))
+	connection.Close()
+	return message, senderAddr
 }
 
 func (info NetworkInfo) SendFindContactMessage(contact *Contact) {
