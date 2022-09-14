@@ -13,16 +13,16 @@ import (
 
 // Used in main to call on NewRandomKademliaID function
 type Node struct {
-	ID *KademliaID
+	ID [IDLength]byte
 	IP net.UDPAddr
 }
 
 type Packet struct {
-	ID [20]byte
+	ID [IDLength]byte
 	IP net.UDPAddr
 }
 
-func NewNode(id [20]byte, ip net.UDPAddr) Node {
+func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
 	Id := NewKademliaID(id)
 	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
 	return Node{Id, ip}
@@ -115,7 +115,7 @@ func listen() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		addToBucket(*b, message)
+		b.addToBucket(message)
 		//NewNode(message.ID, message.IP)
 		fmt.Println("Received message from ", senderAddr, "\n Packet IP: ", message.IP.String(), "\n Sender ID: ", message.ID)
 	}
@@ -147,7 +147,7 @@ func send() {
 
 	//message := []byte(string("hello from " + node.ID.String()[0:4] + " :))))"))
 	sendPack := Packet{}
-	sendPack.ID = *node.ID
+	sendPack.ID = node.ID
 	sendPack.IP = *localAddr
 
 	var buffer bytes.Buffer

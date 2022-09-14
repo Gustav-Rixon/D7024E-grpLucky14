@@ -21,12 +21,12 @@ func newBucket() *Bucket {
 // Searches through a bucket for an ID from Packet, if the ID is found the entry corresponding to the ID get moved to the front of the buckets list
 // OTHERWISE creates a new node instance and places it into the bucket
 // THIS SHOULD BE CALLED in the listen function every time the node receives a message as per the kademlia specification.
-func addToBucket(b Bucket, p Packet) {
+func (b Bucket) addToBucket(p Packet) {
 	var element *list.Element
 	for e := b.list.Front(); e != nil; e = e.Next() {
 		nodeID := e.Value.(Node).ID
 
-		if (p).ID == *nodeID {
+		if (p).ID == nodeID {
 			element = e
 		}
 	}
@@ -42,6 +42,7 @@ func addToBucket(b Bucket, p Packet) {
 	}
 }
 
+// *******OLD BUCKET CODE*********
 type bucket2 struct {
 	list *list.List
 }
