@@ -85,22 +85,13 @@ func listen() {
 	}
 }
 
-// ====================================================
+// Function for pinging a given IP
 //
-// REMEMBER TO REMOVE AWAITPACKET CALL (SUCKS!!!!!!!!!)
-//
-// ====================================================
-//
-// Function for pinging and awaiting reply from a given IP
-// NOTE: Expects IP to exclude port number
+// TODO:
+// Once routing is implemented, change to ping a specific Node
 func sendPing(destIP net.IP) {
 	fmt.Println("Pinging ", destIP)
 	sendPacket(createPingPacket(node), destIP)
-
-	fmt.Println("Awaiting reply...")
-	p := awaitPacket()
-	fmt.Println("receieved replyey: ", p.pType)
-	handlePacket(p)
 }
 
 // Function for sending a given packet 'p' to a given IP using UDP communication
@@ -164,16 +155,10 @@ func awaitPacket() Packet {
 }
 
 func handlePacket(p Packet) {
-	switch p.pType {
+	switch p.PType {
 	case ping:
-		fmt.Println("Received ping from ", p.IP.String(), "\n Sender ID: ", hex.EncodeToString(p.ID[:]))
-
-		nodes := []Node{NewNode(NewRandomKademliaID(), p.IP),
-			NewNode(NewRandomKademliaID(), p.IP),
-			NewNode(NewRandomKademliaID(), p.IP),
-			NewNode(NewRandomKademliaID(), p.IP)}
-
-		sendPacket(createReturnNodesPacket(node, nodes), p.IP)
+		fmt.Println("Received ping from ", p.IP.String(), "\nSender ID: ", hex.EncodeToString(p.ID[:]))
+		sendPacket(createACKPacket(node), p.IP)
 		break
 
 	case find_node:
@@ -193,10 +178,6 @@ func handlePacket(p Packet) {
 		break
 
 	case return_nodes:
-		fmt.Println("reading nodes")
-		for _, n := range p.nodes {
-			fmt.Println(n)
-		}
 		// TODO
 		break
 
@@ -205,6 +186,6 @@ func handlePacket(p Packet) {
 		break
 
 	default:
-		log.Fatal("Unknown package type received")
+		log.Fatal("Unknown package type received: ", p.PType)
 	}
 }

@@ -50,9 +50,9 @@ func main() {
 
 	if netInfo.localIPAddr.Mask(net.IPv4Mask(0, 0, 255, 255)).String() != "0.0.0.2" {
 		go sendLoop()
-	} else {
-		go listen()
 	}
+
+	go listen()
 
 	for {
 		//fmt.Println("Alive") // Debug printout to ensure node is alive
