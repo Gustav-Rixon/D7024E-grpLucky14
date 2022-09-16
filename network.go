@@ -9,11 +9,6 @@ import (
 	"net"
 )
 
-type Packet struct {
-	ID [20]byte
-	IP net.IP
-}
-
 type NetworkInfo struct {
 	localIPAddr net.IP
 	listenPort  string
@@ -35,7 +30,7 @@ func getOutboundIP() net.IP {
 }
 
 // Also borrowed from Stack Overflow
-// Converts an ip address to int
+// Converts an ip address to int (useful??????)
 /* func ip2int(ip net.IP) uint32 {
 	if len(ip) == 16 {
 		return binary.BigEndian.Uint32(ip[12:16])
@@ -162,14 +157,10 @@ func awaitPacket() (Packet, *net.UDPAddr) {
 	return message, senderAddr
 }
 
-func (info NetworkInfo) SendFindContactMessage(contact *Contact) {
-	// TODO
-}
+func handlePacket(p Packet) {
+	switch p.pType {
+	case ping:
 
-func (info NetworkInfo) SendFindDataMessage(hash string) {
-	// TODO
-}
-
-func (info NetworkInfo) SendStoreMessage(data []byte) {
-	// TODO
+		break
+	}
 }
