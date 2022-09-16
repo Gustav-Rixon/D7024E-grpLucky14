@@ -40,6 +40,7 @@ func main() {
 	randSource := rand.NewSource(time.Now().UnixNano())
 	rGen = rand.New(randSource)
 	node.ID = NewRandomKademliaID()
+	node.IP = getOutboundIP()
 
 	//BUCKET TESTING CODE
 	b = newBucket()
@@ -67,7 +68,7 @@ func sendLoop() {
 	supernodeAddr := net.IPv4(byte(networkPrefix1), byte(networkPrefix2), 0, 2)
 	for {
 		// Forever ping the supernode
-		Ping(supernodeAddr)
+		sendPing(supernodeAddr)
 		time.Sleep(time.Second * 3)
 	}
 }
