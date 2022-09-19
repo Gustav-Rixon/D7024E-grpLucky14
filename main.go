@@ -1,6 +1,10 @@
 package main
 
 import (
+	. "kademlia/internal/kademliaid"
+	"kademlia/internal/network"
+	. "kademlia/internal/network"
+	. "kademlia/internal/node"
 	"math/rand"
 	"net"
 	"strconv"
@@ -22,8 +26,16 @@ func getRandNum() int {
 
 // Creates a node instance of itself
 func createSelf() Node {
-	var me = NewNode(NewRandomKademliaID(), getOutboundIP())
+	var me = NewNode(NewRandomKademliaID(), network.GetOutboundIP())
 	return me
+}
+
+func getDistance(NodeA []byte, NodeB []byte) KademliaID {
+	result := KademliaID{}
+	for i := 0; i < IDLength; i++ {
+		result[i] = NodeA[i] ^ NodeB[i]
+	}
+	return result
 }
 
 // Random number generator, use to get random numbers between nodes
