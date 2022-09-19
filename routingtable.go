@@ -23,7 +23,7 @@ func NewRoutingTable(me Node) *RoutingTable {
 
 //Creates a new node instance, used when adding a node to bucket
 //to transform the info from the message into a node instance
-func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
+func NewNode(id [IDLength]byte, ip net.IP) Node {
 	Id := NewKademliaID(id)
 	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
 	return Node{Id, ip}
