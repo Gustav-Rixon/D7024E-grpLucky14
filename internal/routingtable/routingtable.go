@@ -2,49 +2,57 @@ package routingtable
 
 import (
 	"kademlia/internal/bucket"
-	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
+	"kademlia/internal/node"
 	"net"
 )
 
 const bucketSize = 20
 
+// Routing table used for testing
+var rt RoutingTable
+
+// Definitely move this
+func GetRT() *RoutingTable {
+	return &rt
+}
+
 // RoutingTable definition
 // keeps a refrence contact of me and an array of buckets
 type RoutingTable struct {
-	me      contact.Node
+	Me      node.Node
 	buckets [kademliaid.IDLength * 8]*bucket.Bucket
 }
 
 // NewRoutingTable returns a new instance of a RoutingTable
-func NewRoutingTable(me Node) *RoutingTable {
+func NewRoutingTable(me node.Node) *RoutingTable {
 	routingTable := &RoutingTable{}
 	for i := 0; i < kademliaid.IDLength*8; i++ {
-		routingTable.buckets[i] = newBucket()
+		routingTable.buckets[i] = bucket.NewBucket()
 	}
-	routingTable.me = me
+	routingTable.Me = me
 	return routingTable
 }
 
 // Creates a new node instance, used when adding a node to bucket
 // to transform the info from the message into a node instance
-func NewNode(id [IDLength]byte, ip net.IP) Node {
-	Id := NewKademliaID(id)
+func NewNode(id [kademliaid.IDLength]byte, ip net.IP) node.Node {
+	Id := kademliaid.NewKademliaID(id)
 	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
-	return Node{Id, ip}
+	return node.Node{Id, ip}
 }
 
 // AddContact add a new contact to the correct Bucket
-func (routingTable *RoutingTable) AddContact(id [IDLength]byte, ip net.UDPAddr) {
-	bucketIndex := routingTable.getBucketIndex(node)
+func (routingTable *RoutingTable) AddContact(id [kademliaid.IDLength]byte, ip net.IP) {
+	bucketIndex := routingTable.getBucketIndex(*node.GetNode())
 	bucket := routingTable.buckets[bucketIndex]
-	bucket.addToBucket(id, ip)
+	bucket.AddToBucket(id, ip)
 }
 
 // getBucketIndex get the correct Bucket index for the KademliaID
-func (routingTable *RoutingTable) getBucketIndex(node Node) int {
-	distance := node.CalcDistance(rt.me.ID)
-	for i := 0; i < IDLength; i++ {
+func (routingTable *RoutingTable) getBucketIndex(node node.Node) int {
+	distance := node.CalcDistance(rt.Me.ID)
+	for i := 0; i < kademliaid.IDLength; i++ {
 		for j := 0; j < 8; j++ {
 			if (distance[i]>>uint8(7-j))&0x1 != 0 {
 				return i*8 + j
@@ -52,7 +60,7 @@ func (routingTable *RoutingTable) getBucketIndex(node Node) int {
 		}
 	}
 
-	return IDLength*8 - 1
+	return kademliaid.IDLength*8 - 1
 }
 
 /*

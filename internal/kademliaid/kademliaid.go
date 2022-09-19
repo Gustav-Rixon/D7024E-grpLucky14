@@ -3,19 +3,18 @@ package kademliaid
 import (
 	"encoding/hex"
 	"math/rand"
+	"time"
 )
 
 // the static number of bytes in a KademliaID
-const IDLength = 20
+const IDLength int = 20
 
 // type definition of a KademliaID
 type KademliaID [IDLength]byte
 
-/*
 // Förmodligen för testing?
 // NewKademliaID returns a new instance of a KademliaID based on the string input
 func NewKademliaID(id [IDLength]byte) [IDLength]byte {
-
 	newKademliaID := KademliaID{}
 	for i := 0; i < IDLength; i++ {
 		newKademliaID[i] = id[i]
@@ -23,7 +22,6 @@ func NewKademliaID(id [IDLength]byte) [IDLength]byte {
 
 	return newKademliaID
 }
-*/
 
 // Random number generator, use to get random numbers between nodes
 var rGen *rand.Rand
@@ -37,6 +35,12 @@ func getRandNum() int {
 // NewRandomKademliaID returns a new instance of a random KademliaID,
 // change this to a better version if you like
 func NewRandomKademliaID() [IDLength]byte {
+	// First time init
+	if rGen == nil {
+		randSource := rand.NewSource(time.Now().UnixNano())
+		rGen = rand.New(randSource)
+	}
+
 	newKademliaID := KademliaID{}
 	for i := 0; i < IDLength; i++ {
 		newKademliaID[i] = uint8(getRandNum())
@@ -62,16 +66,6 @@ func (kademliaID KademliaID) Equals(otherKademliaID *KademliaID) bool {
 		}
 	}
 	return true
-}
-
-// CalcDistance returns a new instance of a KademliaID that is built
-// through a bitwise XOR operation betweeen kademliaID and target
-func (node Node) CalcDistance(target [IDLength]byte) [IDLength]byte {
-	result := KademliaID{}
-	for i := 0; i < IDLength; i++ {
-		result[i] = node.ID[i] ^ target[i]
-	}
-	return result
 }
 
 // String returns a simple string representation of a KademliaID

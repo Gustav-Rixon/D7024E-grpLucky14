@@ -1,6 +1,9 @@
-package main
+package network
 
-import "net"
+import (
+	"kademlia/internal/node"
+	"net"
+)
 
 // Go version of an enum:
 type PacketType uint8
@@ -29,10 +32,10 @@ type Packet struct {
 
 	KeyVal []byte // Holds the 20-byte key in find_value Packets, but is also used to hold the value in store and return_value Packets
 
-	Nodes []Node // Array used for storing node info when responding to a find_node packet
+	Nodes []node.Node // Array used for storing node info when responding to a find_node packet
 }
 
-func createPingPacket(thisNode Node) Packet {
+func createPingPacket(thisNode node.Node) Packet {
 	var p Packet
 	p.PType = ping
 
@@ -42,7 +45,7 @@ func createPingPacket(thisNode Node) Packet {
 	return p
 }
 
-func createFindNodePacket(thisNode Node, targetID [20]byte) Packet {
+func createFindNodePacket(thisNode node.Node, targetID [20]byte) Packet {
 	var p Packet
 	p.PType = find_node
 
@@ -53,7 +56,7 @@ func createFindNodePacket(thisNode Node, targetID [20]byte) Packet {
 	return p
 }
 
-func createFindValuePacket(thisNode Node, targetID [20]byte, key [20]byte) Packet {
+func createFindValuePacket(thisNode node.Node, targetID [20]byte, key [20]byte) Packet {
 	var p Packet
 	p.PType = find_value
 
@@ -65,7 +68,7 @@ func createFindValuePacket(thisNode Node, targetID [20]byte, key [20]byte) Packe
 	return p
 }
 
-func createStorePacket(thisNode Node, value []byte) Packet {
+func createStorePacket(thisNode node.Node, value []byte) Packet {
 	var p Packet
 	p.PType = store
 
@@ -76,7 +79,7 @@ func createStorePacket(thisNode Node, value []byte) Packet {
 	return p
 }
 
-func createACKPacket(thisNode Node) Packet {
+func createACKPacket(thisNode node.Node) Packet {
 	var p Packet
 	p.PType = ACK
 
@@ -86,7 +89,7 @@ func createACKPacket(thisNode Node) Packet {
 	return p
 }
 
-func createReturnNodesPacket(thisNode Node, nodes []Node) Packet {
+func createReturnNodesPacket(thisNode node.Node, nodes []node.Node) Packet {
 	var p Packet
 	p.PType = return_nodes
 
@@ -97,7 +100,7 @@ func createReturnNodesPacket(thisNode Node, nodes []Node) Packet {
 	return p
 }
 
-func createReturnValuePacket(thisNode Node, value []byte) Packet {
+func createReturnValuePacket(thisNode node.Node, value []byte) Packet {
 	var p Packet
 	p.PType = return_nodes
 

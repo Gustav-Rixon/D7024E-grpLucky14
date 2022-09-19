@@ -3,10 +3,10 @@ package bucket
 import (
 	"container/list"
 	"fmt"
-	. "kademlia/internal/Node"
 	. "kademlia/internal/contact"
 	. "kademlia/internal/kademliaid"
-	. "kademlia/internal/network"
+	"kademlia/internal/node"
+	. "kademlia/internal/node"
 	"net"
 )
 
@@ -19,7 +19,7 @@ type Bucket struct {
 }
 
 // Creates a bucket
-func newBucket() *Bucket {
+func NewBucket() *Bucket {
 	bucket := &Bucket{}
 	bucket.list = list.New()
 	return bucket
@@ -28,7 +28,7 @@ func newBucket() *Bucket {
 // Searches through a bucket for an ID from Packet, if the ID is found the entry corresponding to the ID get moved to the front of the buckets list
 // OTHERWISE creates a new node instance and places it into the bucket
 // THIS SHOULD BE CALLED in the listen function every time the node receives a message as per the kademlia specification.
-func (b Bucket) addToBucket(id [IDLength]byte, ip net.UDPAddr) {
+func (b Bucket) AddToBucket(id [IDLength]byte, ip net.IP) {
 	var element *list.Element
 	for e := b.list.Front(); e != nil; e = e.Next() {
 		nodeID := e.Value.(Node).ID
@@ -42,7 +42,7 @@ func (b Bucket) addToBucket(id [IDLength]byte, ip net.UDPAddr) {
 			var n = NewNode(id, ip)
 			b.list.PushFront(n)
 			fmt.Println("New Node added to bucket")
-			var res = n.CalcDistance(rt.me.ID)
+			var res = n.CalcDistance(node.GetNode().ID)
 			fmt.Println("Distance from me to node = ", res)
 		}
 	} else {

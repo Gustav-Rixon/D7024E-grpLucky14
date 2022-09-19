@@ -5,12 +5,13 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
+	"kademlia/internal/node"
 	"log"
 	"net"
 )
 
 type NetworkInfo struct {
-	localIPAddr net.IP
+	LocalIPAddr net.IP
 	sendPort    string
 	listenPort  string
 	outUDP      net.UDPAddr // Resolved UDP address to send Packets from
@@ -41,15 +42,15 @@ func GetOutboundIP() net.IP {
 } */
 
 // Global variable holding all useful container network information for communication between containers
-var netInfo NetworkInfo
+var NetInfo NetworkInfo
 
 // Initializes global variable netInfo
-func initNetwork(listenPort int, sendPort int) {
+func InitNetwork(listenPort int, sendPort int) {
 	var networkInfo NetworkInfo
 
 	// Get basic info
 
-	networkInfo.localIPAddr = GetOutboundIP()
+	networkInfo.LocalIPAddr = GetOutboundIP()
 	networkInfo.sendPort = ":" + fmt.Sprint(sendPort)     // Stored in format :port for ease of concatenating
 	networkInfo.listenPort = ":" + fmt.Sprint(listenPort) // ditto
 	if listenPort < 0 || sendPort < 0 {
@@ -58,12 +59,12 @@ func initNetwork(listenPort int, sendPort int) {
 
 	// Resolve local UDP addresses
 
-	outUDP, err := net.ResolveUDPAddr("udp", networkInfo.localIPAddr.String()+networkInfo.sendPort)
+	outUDP, err := net.ResolveUDPAddr("udp", networkInfo.LocalIPAddr.String()+networkInfo.sendPort)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	inUDP, err := net.ResolveUDPAddr("udp", networkInfo.localIPAddr.String()+networkInfo.listenPort)
+	inUDP, err := net.ResolveUDPAddr("udp", networkInfo.LocalIPAddr.String()+networkInfo.listenPort)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,12 +72,12 @@ func initNetwork(listenPort int, sendPort int) {
 	networkInfo.outUDP = *outUDP
 	networkInfo.inUDP = *inUDP
 
-	netInfo = networkInfo
+	NetInfo = networkInfo
 }
 
 // Function that eternally listens for- and handles Packets
-func listen() {
-	fmt.Println("Beginning to listen on ", netInfo.localIPAddr)
+func Listen() {
+	fmt.Println("Beginning to listen on ", NetInfo.LocalIPAddr)
 
 	var p Packet
 	for {
@@ -89,21 +90,21 @@ func listen() {
 //
 // TODO:
 // Once routing is implemented, change to ping a specific Node
-func sendPing(destIP net.IP) {
+func SendPing(destIP net.IP) {
 	fmt.Println("Pinging ", destIP)
-	sendPacket(createPingPacket(node), destIP)
+	sendPacket(createPingPacket(*node.GetNode()), destIP)
 }
 
 // Function for sending a given packet 'p' to a given IP using UDP communication
 func sendPacket(p Packet, destIP net.IP) {
 	// Resolve destination UDP address
-	destAddr, err := net.ResolveUDPAddr("udp", destIP.String()+netInfo.listenPort)
+	destAddr, err := net.ResolveUDPAddr("udp", destIP.String()+NetInfo.listenPort)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Establish UDP connection
-	connection, err := net.DialUDP("udp", &netInfo.outUDP, destAddr)
+	connection, err := net.DialUDP("udp", &NetInfo.outUDP, destAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -131,7 +132,7 @@ func sendPacket(p Packet, destIP net.IP) {
 // and will crash everything :(
 func awaitPacket() Packet {
 	// Begin listening
-	connection, err := net.ListenUDP("udp", &netInfo.inUDP)
+	connection, err := net.ListenUDP("udp", &NetInfo.inUDP)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -158,7 +159,7 @@ func handlePacket(p Packet) {
 	switch p.PType {
 	case ping:
 		fmt.Println("Received ping from ", p.IP.String(), "\nSender ID: ", hex.EncodeToString(p.ID[:]))
-		sendPacket(createACKPacket(node), p.IP)
+		sendPacket(createACKPacket(*node.GetNode()), p.IP)
 		break
 
 	case find_node:

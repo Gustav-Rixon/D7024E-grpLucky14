@@ -22,7 +22,7 @@ func NewContact(id *kademliaid.KademliaID, address string) Contact {
 // CalcDistance calculates the distance to the target and
 // fills the contacts distance field
 func (contact *Contact) CalcDistance(target *kademliaid.KademliaID) {
-	contact.distance = contact.ID.CalcDistance(target)
+	//contact.distance = contact.CalcDistance(target) behövs omformateras till att använda node's calcdistance
 }
 
 // Less returns true if contact.distance < otherContact.distance
