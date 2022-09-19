@@ -54,12 +54,12 @@ func (kademliaID KademliaID) Equals(otherKademliaID *KademliaID) bool {
 
 // CalcDistance returns a new instance of a KademliaID that is built
 // through a bitwise XOR operation betweeen kademliaID and target
-func (kademliaID KademliaID) CalcDistance(target *KademliaID) *KademliaID {
+func (node Node) CalcDistance(target [IDLength]byte) [IDLength]byte {
 	result := KademliaID{}
 	for i := 0; i < IDLength; i++ {
-		result[i] = kademliaID[i] ^ target[i]
+		result[i] = node.ID[i] ^ target[i]
 	}
-	return &result
+	return result
 }
 
 // String returns a simple string representation of a KademliaID

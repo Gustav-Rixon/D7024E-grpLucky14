@@ -1,5 +1,7 @@
 package main
 
+import "net"
+
 const bucketSize = 20
 
 // RoutingTable definition
@@ -19,12 +21,36 @@ func NewRoutingTable(me Node) *RoutingTable {
 	return routingTable
 }
 
-// AddContact add a new contact to the correct Bucket
-/*func (routingTable *RoutingTable) AddContact(contact Node) {
-	bucketIndex := routingTable.getBucketIndex(contact.ID)
-	bucket := routingTable.buckets[bucketIndex]
-	bucket.addToBucket(contact)
+//Creates a new node instance, used when adding a node to bucket
+//to transform the info from the message into a node instance
+func NewNode(id [IDLength]byte, ip net.UDPAddr) Node {
+	Id := NewKademliaID(id)
+	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
+	return Node{Id, ip}
 }
+
+// AddContact add a new contact to the correct Bucket
+func (routingTable *RoutingTable) AddContact(id [IDLength]byte, ip net.UDPAddr) {
+	bucketIndex := routingTable.getBucketIndex(node)
+	bucket := routingTable.buckets[bucketIndex]
+	bucket.addToBucket(id, ip)
+}
+
+// getBucketIndex get the correct Bucket index for the KademliaID
+func (routingTable *RoutingTable) getBucketIndex(node Node) int {
+	distance := node.CalcDistance(rt.me.ID)
+	for i := 0; i < IDLength; i++ {
+		for j := 0; j < 8; j++ {
+			if (distance[i]>>uint8(7-j))&0x1 != 0 {
+				return i*8 + j
+			}
+		}
+	}
+
+	return IDLength*8 - 1
+}
+
+/*
 
 // FindClosestContacts finds the count closest Contacts to the target in the RoutingTable
 func (routingTable *RoutingTable) FindClosestContacts(target *KademliaID, count int) []Contact {
@@ -54,16 +80,4 @@ func (routingTable *RoutingTable) FindClosestContacts(target *KademliaID, count 
 	return candidates.GetContacts(count)
 }
 
-// getBucketIndex get the correct Bucket index for the KademliaID
-func (routingTable *RoutingTable) getBucketIndex(id [IDLength]byte) int {
-	distance := id.CalcDistance(routingTable.me.ID)
-	for i := 0; i < IDLength; i++ {
-		for j := 0; j < 8; j++ {
-			if (distance[i]>>uint8(7-j))&0x1 != 0 {
-				return i*8 + j
-			}
-		}
-	}
-
-	return IDLength*8 - 1
-}*/
+*/
