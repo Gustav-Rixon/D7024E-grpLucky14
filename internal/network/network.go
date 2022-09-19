@@ -45,7 +45,7 @@ func GetOutboundIP() net.IP {
 var NetInfo NetworkInfo
 
 // Initializes global variable netInfo
-func InitNetwork(listenPort int, sendPort int) {
+func InitNetwork(listenPort int, sendPort int) error {
 	var networkInfo NetworkInfo
 
 	// Get basic info
@@ -53,26 +53,26 @@ func InitNetwork(listenPort int, sendPort int) {
 	networkInfo.LocalIPAddr = GetOutboundIP()
 	networkInfo.sendPort = ":" + fmt.Sprint(sendPort)     // Stored in format :port for ease of concatenating
 	networkInfo.listenPort = ":" + fmt.Sprint(listenPort) // ditto
-	if listenPort < 0 || sendPort < 0 {
-		log.Panicln("Invalid port number")
-	}
 
 	// Resolve local UDP addresses
 
 	outUDP, err := net.ResolveUDPAddr("udp", networkInfo.LocalIPAddr.String()+networkInfo.sendPort)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Bad send address during network init")
+		return err
 	}
 
 	inUDP, err := net.ResolveUDPAddr("udp", networkInfo.LocalIPAddr.String()+networkInfo.listenPort)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Bad listen address during network init")
+		return err
 	}
 
 	networkInfo.outUDP = *outUDP
 	networkInfo.inUDP = *inUDP
 
 	NetInfo = networkInfo
+	return nil
 }
 
 // Function that eternally listens for- and handles Packets
