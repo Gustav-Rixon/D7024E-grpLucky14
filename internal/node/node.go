@@ -1,6 +1,7 @@
 package node
 
 import (
+	"crypto/sha256"
 	"kademlia/internal/kademliaid"
 	"net"
 )
@@ -14,13 +15,16 @@ type Node struct {
 // This container's node
 var node Node
 
-// Initiates the node
+// Hash table used as storage
+var storage map[string]string
+
+// Initiates the node if it hasn't been initialized already
 func CreateSelf(id [kademliaid.IDLength]byte, ip net.IP) {
-	// Only initialize if ID is uninitialized
 	if node.ID == [20]byte{} {
 		node = NewNode(id, ip)
+		storage = make(map[string]string)
 	} else {
-		panic("WHY WOULD YOU TRY TO INIT TWICE")
+		panic("Node already initialized")
 	}
 }
 
@@ -42,4 +46,27 @@ func (node Node) CalcDistance(target [kademliaid.IDLength]byte) [kademliaid.IDLe
 		result[i] = node.ID[i] ^ target[i]
 	}
 	return result
+}
+
+// Creates and returns a 160-bit hash key for a given string
+func getKey(value string) string {
+	key := sha256.Sum256([]byte(value))
+	return string(key[:20])
+}
+
+// Takes a string and inserts it into this node's hash table
+func StoreValue(value string) {
+	key := getKey(value)
+	storage[key] = value
+}
+
+// Returns the value from the hash table that the key is mapped to if an entry exists, otherwise returns an empty string
+func GetValue(key string) (exists bool, value string) {
+	value, exists = storage[key]
+	if exists {
+		return exists, value
+	} else {
+		// Value not found, does not exist in storage
+		return exists, ""
+	}
 }
