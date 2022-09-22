@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/urfave/cli"
 )
@@ -27,15 +28,15 @@ func Commands() {
 			Name:  "get",
 			Usage: "do the thing",
 			Action: func(c *cli.Context) error {
-				fmt.Println("get")
+				fmt.Println("bajsa")
 				return nil
 			},
 		},
 		{
 			Name:  "exit",
-			Usage: "do the thing",
+			Usage: "Terminates the node",
 			Action: func(c *cli.Context) error {
-				fmt.Println("exit")
+				terminate()
 				return nil
 			},
 		},
@@ -45,4 +46,9 @@ func Commands() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// Executes kill -9 7. NOTE this is HARD codeded and expects the docker continer to have the PID 7
+func terminate() {
+	exec.Command("kill", "-9", "7").Run()
 }
