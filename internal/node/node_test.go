@@ -19,8 +19,8 @@ func TestHashTable(t *testing.T) {
 		wantExists bool
 		wantValue  string
 	}{
-		{"Check get existing value", args{getKey("test1")}, true, "test1"},
-		{"Check get nonexistent value", args{getKey("test2")}, false, ""},
+		{"Check get existing value", args{GetKey("test1")}, true, "test1"},
+		{"Check get nonexistent value", args{GetKey("test2")}, false, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

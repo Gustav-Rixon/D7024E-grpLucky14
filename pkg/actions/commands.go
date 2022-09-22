@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	. "kademlia/internal/datastorage"
 	. "kademlia/internal/node"
 	"log"
 	"os"
@@ -24,7 +25,7 @@ func Commands() {
 				fmt.Println("Pls input file <This is just a string>:")
 				var file string
 				fmt.Scanln(&file)
-				StoreValue(file)
+				Insert(file)
 				fmt.Println(GetKey(file))
 				return nil
 			},
@@ -33,7 +34,7 @@ func Commands() {
 			Name:  "get",
 			Usage: "Takes a hash as its only argument, and outputs the contents of the object and the node it was retrieved from, if it could be downloaded successfully",
 			Action: func(c *cli.Context) error {
-				fmt.Println("Pls input key <This is just a string>:")
+				fmt.Println("Pls input key <hash>:")
 				var key string
 				fmt.Scanln(&key)
 				fmt.Println(GetKey(key))

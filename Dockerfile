@@ -8,6 +8,8 @@ COPY . .
 RUN go build cmd/cli.go 
 RUN go build -o /docker-gs-ping
 
+WORKDIR /kademlia
+
 ENV PATH /kademlia:$PATH
 
 # Run

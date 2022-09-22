@@ -3,7 +3,6 @@ package main
 import (
 	. "kademlia/internal/kademliaid"
 	"kademlia/internal/network"
-	"kademlia/internal/node"
 	. "kademlia/internal/node"
 	"kademlia/internal/routingtable"
 	"net"
@@ -22,7 +21,7 @@ func getDistance(NodeA []byte, NodeB []byte) KademliaID {
 
 func main() {
 	//ROUTINGTABLE TESTING CODE
-	node.CreateSelf(NewRandomKademliaID(), network.GetOutboundIP())
+	//CreateSelf(NewRandomKademliaID(), network.GetOutboundIP())
 	routingtable.NewRoutingTable(*GetNode())
 
 	// initialize network settings, communicate via port 80
@@ -38,6 +37,7 @@ func main() {
 	for {
 		//fmt.Println("Alive") // Debug printout to ensure node is alive
 		time.Sleep(time.Second / 10)
+		//fmt.Println(*GetNode())
 	}
 }
 

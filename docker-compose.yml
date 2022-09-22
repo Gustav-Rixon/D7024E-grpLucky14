@@ -9,6 +9,7 @@ version: "3"
 services:
   nodeTest:
     image: docker-gs-ping:latest # Make sure your Docker image has this name.
+    init: true #test
     build:
       context: .
       dockerfile: Dockerfile
@@ -19,15 +20,16 @@ services:
       #           limits:
       #              cpus: "0.1"
       #              memory: 50M
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 10s
+      #restart_policy:
+      #  condition: on-failure
+      #  delay: 5s
+      #  max_attempts: 3
+      #  window: 10s
     networks:
       - kademlia_network #STACK_kademlia_network
     environment:
       - LISTEN_PORT=8888
+
 networks:
   kademlia_network:
 

@@ -1,15 +1,17 @@
 package node
 
 import (
-	"crypto/sha256"
+	"fmt"
+	"kademlia/datastore"
 	"kademlia/internal/kademliaid"
 	"net"
 )
 
 // Used in main to call on NewRandomKademliaID function
 type Node struct {
-	ID [kademliaid.IDLength]byte
-	IP net.IP
+	ID        [kademliaid.IDLength]byte
+	IP        net.IP
+	DataStore datastore.DataStore
 }
 
 // This container's node
@@ -34,7 +36,7 @@ func GetNode() *Node {
 
 func NewNode(id [kademliaid.IDLength]byte, ip net.IP) Node {
 	Id := kademliaid.NewKademliaID(id)
-	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
+	fmt.Println("Successfully created instance of Kademlia ID: ", id, " With IP: ", ip.String())
 	return Node{Id, ip}
 }
 
@@ -48,18 +50,30 @@ func (node Node) CalcDistance(target [kademliaid.IDLength]byte) [kademliaid.IDLe
 	return result
 }
 
+func (node *Node) StoreData(value *string) {
+
+}
+
+/*
 // Creates and returns a 160-bit hash key for a given string
-func getKey(value string) string {
-	key := sha256.Sum256([]byte(value))
+func GetKey(value string) string {
+	key := sha1.Sum([]byte(value))
 	return string(key[:20])
 }
+*/
 
+/*
 // Takes a string and inserts it into this node's hash table
 func StoreValue(value string) {
-	key := getKey(value)
-	storage[key] = value
+	s := value
+	h := sha1.New()
+	h.Write([]byte(s))
+	sha1_hash := hex.EncodeToString(h.Sum(nil))
+	storage[sha1_hash] = value
 }
+*/
 
+/*
 // Returns the value from the hash table that the key is mapped to if an entry exists, otherwise returns an empty string
 func GetValue(key string) (exists bool, value string) {
 	value, exists = storage[key]
@@ -70,3 +84,4 @@ func GetValue(key string) (exists bool, value string) {
 		return exists, ""
 	}
 }
+*/
