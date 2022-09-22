@@ -34,7 +34,7 @@ func getRandNum() int {
 
 // NewRandomKademliaID returns a new instance of a random KademliaID,
 // change this to a better version if you like
-func NewRandomKademliaID() [IDLength]byte {
+func NewRandomKademliaID() [20]byte {
 	// First time init
 	if rGen == nil {
 		randSource := rand.NewSource(time.Now().UnixNano())
