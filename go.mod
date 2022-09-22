@@ -1,24 +1,21 @@
-module github.com/olliefr/docker-gs-ping
+module kademlia
 
-go 1.16
+go 1.19
+
+require github.com/charmbracelet/bubbletea v0.22.1
 
 require (
-	github.com/Microsoft/go-winio v0.5.0 // indirect
-	github.com/cenkalti/backoff v2.0.0+incompatible // indirect
-	github.com/containerd/continuity v0.1.0 // indirect
-	github.com/gotestyourself/gotestyourself v1.3.0 // indirect
-	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
-	github.com/labstack/echo/v4 v4.2.2
-	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/onsi/ginkgo v1.10.1 // indirect
-	github.com/onsi/gomega v1.7.0 // indirect
-	github.com/opencontainers/runc v1.0.0-rc93 // indirect
-	github.com/ory/dockertest/v3 v3.6.5
-	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/stretchr/testify v1.7.0
-	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
-	golang.org/x/net v0.0.0-20210502030024-e5908800b52b // indirect
-	golang.org/x/sys v0.0.0-20210502180810-71e4cd670f79 // indirect
-	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
-	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect
+	github.com/containerd/console v1.0.3 // indirect
+	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/mattn/go-localereader v0.0.1 // indirect
+	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
+	github.com/muesli/cancelreader v0.2.2 // indirect
+	github.com/muesli/reflow v0.3.0 // indirect
+	github.com/muesli/termenv v0.11.1-0.20220212125758-44cd13922739 // indirect
+	github.com/rivo/uniseg v0.2.0 // indirect
+	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
+	golang.org/x/text v0.3.7 // indirect
 )
