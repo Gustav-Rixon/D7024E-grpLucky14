@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	. "kademlia/internal/node"
 	"log"
 	"os"
 	"os/exec"
@@ -18,17 +19,24 @@ func Commands() {
 	app.Commands = []cli.Command{
 		{
 			Name:  "put",
-			Usage: "do the thing",
+			Usage: "Takes a singel argument, the contents of the file you are uploading, and outputs the hash of the object, if it could be uploaded successfully.",
 			Action: func(c *cli.Context) error {
-				fmt.Println("put")
+				fmt.Println("Pls input file <This is just a string>:")
+				var file string
+				fmt.Scanln(&file)
+				StoreValue(file)
+				fmt.Println(GetKey(file))
 				return nil
 			},
 		},
 		{
 			Name:  "get",
-			Usage: "do the thing",
+			Usage: "Takes a hash as its only argument, and outputs the contents of the object and the node it was retrieved from, if it could be downloaded successfully",
 			Action: func(c *cli.Context) error {
-				fmt.Println("bajsa")
+				fmt.Println("Pls input key <This is just a string>:")
+				var key string
+				fmt.Scanln(&key)
+				fmt.Println(GetKey(key))
 				return nil
 			},
 		},
