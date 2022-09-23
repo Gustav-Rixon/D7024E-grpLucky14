@@ -52,6 +52,6 @@ func TestPing(t *testing.T) {
 
 	go Listen()
 
-	node.CreateSelf([20]byte{}, net.IP{})
-	SendPing(net.IPv4(255, 255, 255, 255))
+	node.CreateSelf([20]byte{}, net.IPv4(255, 255, 255, 255))
+	SendPing(*node.GetNode())
 }

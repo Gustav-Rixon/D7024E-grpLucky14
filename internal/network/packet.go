@@ -56,13 +56,12 @@ func createFindNodePacket(thisNode node.Node, targetID [20]byte) Packet {
 	return p
 }
 
-func createFindValuePacket(thisNode node.Node, targetID [20]byte, key [20]byte) Packet {
+func createFindValuePacket(thisNode node.Node, key [20]byte) Packet {
 	var p Packet
 	p.PType = find_value
 
 	p.ID = thisNode.ID
 	p.IP = thisNode.IP
-	p.TargetID = targetID
 	p.KeyVal = key[:]
 
 	return p

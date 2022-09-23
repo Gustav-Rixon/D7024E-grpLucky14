@@ -90,9 +90,28 @@ func Listen() {
 //
 // TODO:
 // Once routing is implemented, change to ping a specific Node
-func SendPing(destIP net.IP) {
-	fmt.Println("Pinging ", destIP)
-	sendPacket(createPingPacket(*node.GetNode()), destIP)
+func SendPing(target node.Node) {
+	fmt.Println("Pinging ", target.IP.String())
+	sendPacket(createPingPacket(*node.GetNode()), target.IP)
+}
+
+// Sends FindNode packets to a given list of nodes along with the nodeID they should search for
+func FindNode(targets []node.Node, nodeID [20]byte) {
+	for _, t := range targets {
+		sendPacket(createFindNodePacket(*node.GetNode(), nodeID), t.IP)
+	}
+}
+
+// Sends FindValue packets to a given list of nodes along with the key they should search for
+func FindValue(targets []node.Node, key [20]byte) {
+	for _, t := range targets {
+		sendPacket(createFindValuePacket(*node.GetNode(), key), t.IP)
+	}
+}
+
+// Sends a Store packet carrying a byte value to a given node
+func Store(target node.Node, value []byte) {
+	sendPacket(createStorePacket(*node.GetNode(), value), target.IP)
 }
 
 // Function for sending a given packet 'p' to a given IP using UDP communication
@@ -171,7 +190,8 @@ func handlePacket(p Packet) {
 		break
 
 	case store:
-		// TODO
+		fmt.Println("Storing value: ", p.KeyVal)
+		node.StoreValue(string(p.KeyVal))
 		break
 
 	case ACK:
