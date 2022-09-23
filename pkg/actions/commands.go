@@ -2,8 +2,6 @@ package actions
 
 import (
 	"fmt"
-	. "kademlia/internal/datastorage"
-	. "kademlia/internal/node"
 	"log"
 	"os"
 	"os/exec"
@@ -25,8 +23,8 @@ func Commands() {
 				fmt.Println("Pls input file <This is just a string>:")
 				var file string
 				fmt.Scanln(&file)
-				Insert(file)
-				fmt.Println(GetKey(file))
+				//Insert(file)
+				fmt.Println(file)
 				return nil
 			},
 		},
@@ -37,7 +35,7 @@ func Commands() {
 				fmt.Println("Pls input key <hash>:")
 				var key string
 				fmt.Scanln(&key)
-				fmt.Println(GetKey(key))
+				fmt.Println(key)
 				return nil
 			},
 		},
