@@ -2,16 +2,15 @@ package node
 
 import (
 	"fmt"
-	"kademlia/datastore"
 	"kademlia/internal/kademliaid"
 	"net"
 )
 
 // Used in main to call on NewRandomKademliaID function
 type Node struct {
-	ID        [kademliaid.IDLength]byte
-	IP        net.IP
-	DataStore datastore.DataStore
+	ID [kademliaid.IDLength]byte
+	IP net.IP
+	//DataStore datastore.DataStore
 }
 
 // This container's node
