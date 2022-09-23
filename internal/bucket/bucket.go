@@ -39,16 +39,30 @@ func (b Bucket) AddToBucket(id [IDLength]byte, ip net.IP) {
 	}
 	if element == nil {
 		if b.list.Len() < bucketSize {
-			var n = NewNode(id, ip)
+			n := NewNode(id, ip)
 			b.list.PushFront(n)
 			fmt.Println("New Node added to bucket")
-			var res = n.CalcDistance(node.GetNode().ID)
-			fmt.Println("Distance from me to node = ", res)
+			n.CalcDistance(node.GetNode().ID)
+			fmt.Println("Distance from me to node = ", n.GetDistance())
 		}
 	} else {
 		b.list.MoveToFront(element)
 		fmt.Println("Node found in bucket, moving to front")
 	}
+}
+
+// GetContactAndCalcDistance returns an array of Contacts where
+// the distance has already been calculated
+func (bucket *Bucket) GetContactAndCalcDistance(target node.Node) []node.Node {
+	var contacts []node.Node
+
+	for elt := bucket.list.Front(); elt != nil; elt = elt.Next() {
+		node := elt.Value.(Node)
+		node.CalcDistance(target.ID)
+		contacts = append(contacts, node)
+	}
+
+	return contacts
 }
 
 // *******OLD BUCKET CODE*********
@@ -82,20 +96,6 @@ func (bucket *bucket2) AddContact(contact Contact) {
 	} else {
 		bucket.list.MoveToFront(element)
 	}
-}
-
-// GetContactAndCalcDistance returns an array of Contacts where
-// the distance has already been calculated
-func (bucket *bucket2) GetContactAndCalcDistance(target *KademliaID) []Contact {
-	var contacts []Contact
-
-	for elt := bucket.list.Front(); elt != nil; elt = elt.Next() {
-		contact := elt.Value.(Contact)
-		contact.CalcDistance(target)
-		contacts = append(contacts, contact)
-	}
-
-	return contacts
 }
 
 // Len return the size of the bucket

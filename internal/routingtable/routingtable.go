@@ -35,13 +35,17 @@ func NewRoutingTable(me node.Node) {
 
 // Creates a new node instance, used when adding a node to bucket
 // to transform the info from the message into a node instance
+/*
 func NewNode(id [kademliaid.IDLength]byte, ip net.IP) node.Node {
 	Id := kademliaid.NewKademliaID(id)
 	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
-	return node.Node{Id, ip}
+	tempdist := [20]byte{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255}
+	return node.Node{Id, ip, tempdist}
 }
+*/
 
 // AddContact add a new contact to the correct Bucket
+// THIS PROBABLY ADDS CONTACTS TO THE WRONG BUCKETS, getBucketIndex() should take the node that we intend to put in, right now its taking itself????
 func (routingTable *RoutingTable) AddContact(id [kademliaid.IDLength]byte, ip net.IP) {
 	bucketIndex := routingTable.getBucketIndex(*node.GetNode())
 	bucket := routingTable.buckets[bucketIndex]
@@ -64,8 +68,8 @@ func (routingTable *RoutingTable) getBucketIndex(node node.Node) int {
 
 // FindClosestContacts finds the count closest Contacts to the target in the RoutingTable
 /*
-func (routingTable *RoutingTable) FindClosestContacts(target *KademliaID, count int) []Contact {
-	var candidates ContactCandidates
+func (routingTable *RoutingTable) FindClosestContacts(target node.Node, count int) []node.Node {
+	var candidates []node.Node
 	bucketIndex := routingTable.getBucketIndex(target)
 	bucket := routingTable.buckets[bucketIndex]
 
