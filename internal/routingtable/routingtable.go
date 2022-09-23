@@ -1,7 +1,6 @@
 package routingtable
 
 import (
-	"fmt"
 	"kademlia/internal/bucket"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
@@ -11,10 +10,10 @@ import (
 const bucketSize = 20
 
 // Routing table used for testing
-var rt *RoutingTable
+var rt RoutingTable
 
 // Definitely move this
-func GetRT() *RoutingTable {
+func GetRT() RoutingTable {
 	return rt
 }
 
@@ -26,13 +25,12 @@ type RoutingTable struct {
 }
 
 // NewRoutingTable returns a new instance of a RoutingTable
-func NewRoutingTable(me node.Node) *RoutingTable {
-	rt := &RoutingTable{}
+func NewRoutingTable(me node.Node) {
+	//rt := &RoutingTable{}
 	for i := 0; i < kademliaid.IDLength*8; i++ {
 		rt.buckets[i] = bucket.NewBucket()
 	}
 	rt.Me = me
-	return rt
 }
 
 // Creates a new node instance, used when adding a node to bucket
@@ -45,8 +43,6 @@ func NewNode(id [kademliaid.IDLength]byte, ip net.IP) node.Node {
 
 // AddContact add a new contact to the correct Bucket
 func (routingTable *RoutingTable) AddContact(id [kademliaid.IDLength]byte, ip net.IP) {
-	//THE ROUTINGTABLE CREATION IS FUCKED UP AND ITS MAKING THE CODE CRASH WHEN WE DO rt.Me.ID
-	fmt.Println(routingTable.Me.ID)
 	bucketIndex := routingTable.getBucketIndex(*node.GetNode())
 	bucket := routingTable.buckets[bucketIndex]
 	bucket.AddToBucket(id, ip)
@@ -66,9 +62,8 @@ func (routingTable *RoutingTable) getBucketIndex(node node.Node) int {
 	return kademliaid.IDLength*8 - 1
 }
 
-/*
-
 // FindClosestContacts finds the count closest Contacts to the target in the RoutingTable
+/*
 func (routingTable *RoutingTable) FindClosestContacts(target *KademliaID, count int) []Contact {
 	var candidates ContactCandidates
 	bucketIndex := routingTable.getBucketIndex(target)
@@ -95,5 +90,4 @@ func (routingTable *RoutingTable) FindClosestContacts(target *KademliaID, count 
 
 	return candidates.GetContacts(count)
 }
-
 */

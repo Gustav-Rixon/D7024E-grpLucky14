@@ -160,6 +160,7 @@ func handlePacket(p Packet) {
 	switch p.PType {
 	case ping:
 		fmt.Println("Received ping from ", p.IP.String(), "\nSender ID: ", hex.EncodeToString(p.ID[:]))
+		//Add to routing table
 		var rt = routingtable.GetRT()
 		rt.AddContact(p.ID, p.IP)
 		sendPacket(createACKPacket(*node.GetNode()), p.IP)
