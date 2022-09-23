@@ -1,7 +1,6 @@
 package kademliaid
 
 import (
-	"crypto/sha1"
 	"encoding/hex"
 	"math/rand"
 	"time"
@@ -12,12 +11,6 @@ const IDLength int = 20
 
 // type definition of a KademliaID
 type KademliaID [IDLength]byte
-
-// NewKademliaID returns a new instance of a KademliaID based on the string input
-func NewKademliaIDTEST(data *string) KademliaID {
-	hash := sha1.Sum([]byte(*data))
-	return hash
-}
 
 // Förmodligen för testing?
 // NewKademliaID returns a new instance of a KademliaID based on the string input
