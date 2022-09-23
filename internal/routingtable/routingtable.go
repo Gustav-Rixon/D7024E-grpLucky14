@@ -3,8 +3,10 @@ package routingtable
 import (
 	"kademlia/internal/bucket"
 	"kademlia/internal/kademliaid"
+	. "kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 	"net"
+	"sort"
 )
 
 const bucketSize = 20
@@ -33,18 +35,8 @@ func NewRoutingTable(me node.Node) {
 	rt.Me = me
 }
 
-// Creates a new node instance, used when adding a node to bucket
-// to transform the info from the message into a node instance
-/*
-func NewNode(id [kademliaid.IDLength]byte, ip net.IP) node.Node {
-	Id := kademliaid.NewKademliaID(id)
-	//fmt.Println("Successfully created instance of Kademlia ID: ", *Id, " With IP: ", ip.String())
-	tempdist := [20]byte{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255}
-	return node.Node{Id, ip, tempdist}
-}
-*/
-
 // AddContact add a new contact to the correct Bucket
+// ********************************************************************
 // THIS PROBABLY ADDS CONTACTS TO THE WRONG BUCKETS, getBucketIndex() should take the node that we intend to put in, right now its taking itself????
 func (routingTable *RoutingTable) AddContact(id [kademliaid.IDLength]byte, ip net.IP) {
 	bucketIndex := routingTable.getBucketIndex(*node.GetNode())
@@ -67,26 +59,27 @@ func (routingTable *RoutingTable) getBucketIndex(node node.Node) int {
 }
 
 // FindClosestContacts finds the count closest Contacts to the target in the RoutingTable
-/*
+// **********************************************
+// FIX THIS UP TO COMPLETE NODE LOOKUP
 func (routingTable *RoutingTable) FindClosestContacts(target node.Node, count int) []node.Node {
 	var candidates []node.Node
 	bucketIndex := routingTable.getBucketIndex(target)
 	bucket := routingTable.buckets[bucketIndex]
 
-	candidates.Append(bucket.GetContactAndCalcDistance(target))
+	candidates = append(candidates, bucket.GetContactAndCalcDistance(target)...)
 
 	for i := 1; (bucketIndex-i >= 0 || bucketIndex+i < IDLength*8) && candidates.Len() < count; i++ {
 		if bucketIndex-i >= 0 {
 			bucket = routingTable.buckets[bucketIndex-i]
-			candidates.Append(bucket.GetContactAndCalcDistance(target))
+			candidates = append(candidates, bucket.GetContactAndCalcDistance(target)...)
 		}
 		if bucketIndex+i < IDLength*8 {
 			bucket = routingTable.buckets[bucketIndex+i]
-			candidates.Append(bucket.GetContactAndCalcDistance(target))
+			candidates = append(candidates, bucket.GetContactAndCalcDistance(target)...)
 		}
 	}
 
-	candidates.Sort()
+	sort.Sort(candidates)
 
 	if count > candidates.Len() {
 		count = candidates.Len()
@@ -94,4 +87,3 @@ func (routingTable *RoutingTable) FindClosestContacts(target node.Node, count in
 
 	return candidates.GetContacts(count)
 }
-*/

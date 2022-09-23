@@ -40,7 +40,7 @@ func NewNode(id [kademliaid.IDLength]byte, ip net.IP) Node {
 	return Node{Id, ip, tempdist}
 }
 
-// CalcDistance returns a new instance of a KademliaID that is built
+// CalcDistance returns a new instance of a KademliaID that is built, also updates the distance inside the node struct
 // through a bitwise XOR operation betweeen kademliaID and target
 func (n Node) CalcDistance(target [kademliaid.IDLength]byte) [kademliaid.IDLength]byte {
 	result := kademliaid.KademliaID{}
