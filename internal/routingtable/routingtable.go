@@ -5,8 +5,6 @@ import (
 	"kademlia/internal/bucket"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
-
-	"github.com/rs/zerolog/log"
 )
 
 const bucketSize = 20
@@ -40,7 +38,7 @@ func (routingTable *RoutingTable) AddContact(contact contact.Contact) {
 		bucket := routingTable.Buckets[bucketIndex]
 		bucket.AddContact(contact)
 	} else {
-		log.Warn().Str("me", routingTable.me.String()).Str("contact", contact.String()).Msg("Tried to add self as contact")
+		fmt.Println("ajajajajaj")
 	}
 }
 
