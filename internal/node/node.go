@@ -1,6 +1,7 @@
 package node
 
 import (
+	"fmt"
 	"kademlia/internal/address"
 	"kademlia/internal/contact"
 	"kademlia/internal/datastore"
@@ -24,6 +25,7 @@ type Node struct {
 	RoutingTable *routingtable.RoutingTable
 	DataStore    datastore.DataStore
 	Network      network.Network
+	bootstrap    bool
 }
 
 // Init initializes the node by generating a NodeID and creating a
@@ -43,7 +45,36 @@ func (node *Node) Init(address *address.Address) {
 		RoutingTable: routingtable.NewRoutingTable(me),
 		RPCQueue:     rpcqueue.New(),
 		Network:      network.Network{UdpSender: Sender},
+		bootstrap:    false,
 	}
+}
+
+// SUPER/BOOT will have the ID: 9514e18b679622b8d59991a6298559cb03099d64
+func (node *Node) InitBOOT(address *address.Address) {
+	skitt := "0000000000000000000000000000000000000000"
+	id := kademliaid.NewKademliaID(&skitt)
+	me := contact.NewContact(&id, address)
+	Sender, err := sender.New()
+
+	if err != nil {
+		log.Fatal().Str("Error", err.Error()).Msg("Failed to initialize ndoe")
+	}
+
+	*node = Node{
+		ID:           &id,
+		DataStore:    datastore.New(),
+		RoutingTable: routingtable.NewRoutingTable(me),
+		RPCQueue:     rpcqueue.New(),
+		Network:      network.Network{UdpSender: Sender},
+		bootstrap:    true,
+	}
+}
+
+func (node *Node) AddRout(address *address.Address) {
+	skitt := "0000000000000000000000000000000000000000"
+	id := kademliaid.NewKademliaID(&skitt)
+	me := contact.NewContact(&id, address)
+	node.RoutingTable.AddContact(me)
 }
 
 func (node *Node) Store(value *string, contacts *[]contact.Contact) {
@@ -84,9 +115,11 @@ func (node *Node) NewRPC(content string, target *address.Address) rpc.RPC {
 	return rpc.RPC{SenderId: node.ID, RPCId: kademliaid.NewRandomKademliaID(), Content: content, Target: target}
 }
 
-func (node *Node) FindData(hash *kademliaid.KademliaID) string {
-	//TODO CREATE NODELOOKUP
-	return "ajajajaj"
+func (node *Node) NodeLookup(hash *kademliaid.KademliaID) []contact.Contact {
+	//TODO CREATE NODELOOKUP SO THAT I CAN FIND DATA ON NODES THAT ARE NOT IN TABLE
+	candidats := node.FindKClosest(hash, node.ID, 3)
+	fmt.Println(candidats)
+	return candidats
 
 }
 
@@ -97,11 +130,13 @@ func (node *Node) FindData(hash *kademliaid.KademliaID) string {
 //	Probe K NODES FUCK MY LIFE
 func (node *Node) nodeLookup(id *kademliaid.KademliaID) []contact.Contact {
 
+	//LOOP ALL NODES? NAA CLOSESTS RIGHT?
 	for {
 
 	}
 }
 
-func (node *Node) probeNode() {
+// In the paper they call the number of probing alpha right?
+func (node *Node) probeAlhpaNodes() {
 
 }

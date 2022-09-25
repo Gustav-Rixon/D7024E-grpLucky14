@@ -79,3 +79,8 @@ func Listen(node *node.Node) {
 		}
 	}
 }
+
+// THIS WILL PROBELBY NOT STAY
+func ConnectToRoot(node *node.Node) {
+
+}

@@ -7,6 +7,8 @@ import (
 	"kademlia/internal/node"
 	"kademlia/internal/rpc"
 	"kademlia/internal/rpc/commands/ping"
+	"kademlia/internal/rpc/commands/pong"
+	"kademlia/internal/rpc/commands/store"
 	"strings"
 
 	"github.com/rs/zerolog/log"
@@ -31,6 +33,12 @@ func ParseRPC(requestor *contact.Contact, rpc *rpc.RPC) (RPCCommand, error) {
 	case "PING":
 		rpcLog.Msg("PING received")
 		cmd = ping.New(requestor.Address, rpc.RPCId)
+	case "PONG":
+		rpcLog.Msg("PONG received")
+		cmd = pong.New()
+	case "STORE":
+		rpcLog.Msg("STORE received")
+		cmd = new(store.Store)
 	default:
 		err = errors.New(fmt.Sprintf("Received unknown RPC %s", identifier))
 		cmd = nil

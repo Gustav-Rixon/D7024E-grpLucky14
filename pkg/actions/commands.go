@@ -50,6 +50,14 @@ func Commands(msg *[]byte) {
 				return nil
 			},
 		},
+		{
+			Name:  "add",
+			Usage: "Add contact to Routing table",
+			Action: func(c *cli.Context) error {
+				sendMessage(msg)
+				return nil
+			},
+		},
 	}
 
 	err := app.Run(os.Args)

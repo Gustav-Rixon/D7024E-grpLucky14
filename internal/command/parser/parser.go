@@ -3,6 +3,7 @@ package cmdparser
 import (
 	"strings"
 
+	"kademlia/internal/command/commands/add"
 	"kademlia/internal/command/commands/get"
 	"kademlia/internal/command/commands/ping"
 	"kademlia/internal/command/commands/put"
@@ -37,6 +38,9 @@ func ParseCmd(s string) Command {
 
 	case "get":
 		command = new(get.Get)
+
+	case "add":
+		command = new(add.Add)
 
 	default:
 		log.Error().Str("command", cmd).Msg("Received unknown command")

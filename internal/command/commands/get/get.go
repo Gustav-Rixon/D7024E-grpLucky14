@@ -3,6 +3,7 @@ package get
 //TODO GET THE BREaD
 import (
 	"errors"
+	"fmt"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 
@@ -18,10 +19,15 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 
 	// Check local storage
 	value := node.DataStore.Get(get.hash)
+	key := kademliaid.NewKademliaID(&value)
 	if value != "" {
 		value += ", from local node"
+	} else {
+		closestNodes := node.FindKClosest(&key, nil, 3)
+		targetNode := closestNodes
+		fmt.Println(targetNode)
+
 	}
-	//TODO FIND VAULE ON A DIFFRENT NODE
 	if value == "" {
 		return "", errors.New("Key not found")
 	}

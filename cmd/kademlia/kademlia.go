@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"kademlia/internal/address"
 	cmdlistener "kademlia/internal/command/listener"
 	"kademlia/internal/network/listener"
@@ -61,10 +62,24 @@ func main() {
 	}
 	log.Info().Str("Hostname", host).Str("IP", ip).Msg("Starting node...")
 
-	node := node.Node{}
-	addr := address.New("localhost:8888")
-	node.Init(addr)
+	addr := address.New(ip + ":8888")
+	Bootstrap(addr, lport, ip)
 
-	go cmdlistener.Listen(&node)
-	listener.Listen(ip, lport, &node)
+}
+
+func Bootstrap(addr *address.Address, lport int, ip string) {
+	node := node.Node{}
+	if getHostIP() == "172.18.0.2" {
+		node.InitBOOT(addr)
+		fmt.Println(node.ID)
+		go cmdlistener.Listen(&node)
+		listener.Listen(ip, lport, &node)
+	} else {
+		node.Init(addr) //TODO JOIN SUPERNODE
+		addrS := address.New("172.18.0.2:8888")
+		node.AddRout(addrS)
+		fmt.Println(node.RoutingTable.GetContacts())
+		go cmdlistener.Listen(&node)
+		listener.Listen(ip, lport, &node) // THE POINT OF NO RETURN
+	}
 }

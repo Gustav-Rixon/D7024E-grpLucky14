@@ -1,4 +1,4 @@
-package put_test
+package store_test
 
 import (
 	"kademlia/internal/address"
