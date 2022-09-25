@@ -24,7 +24,7 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 		value += ", from local node"
 	} else {
 		closestNodes := node.FindKClosest(&key, nil, 3)
-		targetNode := closestNodes
+		targetNode := closestNodes[0]
 		fmt.Println(targetNode)
 
 	}
