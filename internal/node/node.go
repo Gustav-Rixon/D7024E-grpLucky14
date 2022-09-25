@@ -102,6 +102,6 @@ func (node *Node) nodeLookup(id *kademliaid.KademliaID) []contact.Contact {
 	}
 }
 
-func (node *Node) probeMyASSHOLE() {
+func (node *Node) probeNode() {
 
 }
