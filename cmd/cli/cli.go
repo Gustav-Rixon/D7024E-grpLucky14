@@ -1,4 +1,4 @@
-package cmdlistener
+package main
 
 import (
 	"kademlia/pkg/actions"

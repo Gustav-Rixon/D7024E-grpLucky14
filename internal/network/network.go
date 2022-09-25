@@ -1,192 +1,89 @@
 package network
 
 import (
-	"bytes"
-	"encoding/gob"
-	"encoding/hex"
 	"fmt"
-	"kademlia/internal/node"
-	"log"
-	"net"
+	"kademlia/internal/address"
+	"kademlia/internal/kademliaid"
+	"kademlia/internal/network/sender"
+	"kademlia/internal/rpc"
+
+	"github.com/rs/zerolog/log"
 )
 
-type NetworkInfo struct {
-	LocalIPAddr net.IP
-	sendPort    string
-	listenPort  string
-	outUDP      net.UDPAddr // Resolved UDP address to send Packets from
-	inUDP       net.UDPAddr // Resolved UDP address used to listen for Packets with
+type Network struct {
+	UdpSender *sender.Sender
 }
 
-// Borrowed code from Stack Overflow
-// Gets the preferred outbound ip of this machine/container
-func GetOutboundIP() net.IP {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
+// https://gist.github.com/night-codes/9a0f2a1933eb06a0feea9f940c09d3d4
+// SendPongMessage replies a "PONG" message to the remote "pinger" address
+func (network *Network) SendPongMessage(senderId *kademliaid.KademliaID, target *address.Address, id *kademliaid.KademliaID) {
+	rpc := rpc.New(senderId, "PONG", target)
+	rpc.RPCId = id
+	err := rpc.Send(network.UdpSender, target)
+
 	if err != nil {
-		log.Fatal(err)
+		log.Error().Msgf("Failed to write RPC PING message to UDP: %s", err.Error())
 	}
-	defer conn.Close()
-
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
-	return localAddr.IP
+	log.Debug().Str("Target", target.String()).Msg("Sent PONG RPC to target")
 }
 
-// Also borrowed from Stack Overflow
-// Converts an ip address to int (useful??????)
-/* func ip2int(ip net.IP) uint32 {
-	if len(ip) == 16 {
-		return binary.BigEndian.Uint32(ip[12:16])
-	}
-	return binary.BigEndian.Uint32(ip)
-} */
+// SendPingMessage sends a "PING" message to a remote address
+func (network *Network) SendPingMessage(senderId *kademliaid.KademliaID, target *address.Address) {
+	rpc := rpc.New(senderId, "PING", target)
 
-// Global variable holding all useful container network information for communication between containers
-var NetInfo NetworkInfo
-
-// Initializes global variable netInfo
-func InitNetwork(listenPort int, sendPort int) error {
-	var networkInfo NetworkInfo
-
-	// Get basic info
-
-	networkInfo.LocalIPAddr = GetOutboundIP()
-	networkInfo.sendPort = ":" + fmt.Sprint(sendPort)     // Stored in format :port for ease of concatenating
-	networkInfo.listenPort = ":" + fmt.Sprint(listenPort) // ditto
-
-	// Resolve local UDP addresses
-
-	outUDP, err := net.ResolveUDPAddr("udp", networkInfo.LocalIPAddr.String()+networkInfo.sendPort)
+	err := rpc.Send(network.UdpSender, target)
 	if err != nil {
-		fmt.Println("Bad send address during network init")
-		return err
+		log.Error().Msgf("Failed to write RPC PING message to UDP: %s", err.Error())
 	}
-
-	inUDP, err := net.ResolveUDPAddr("udp", networkInfo.LocalIPAddr.String()+networkInfo.listenPort)
-	if err != nil {
-		fmt.Println("Bad listen address during network init")
-		return err
-	}
-
-	networkInfo.outUDP = *outUDP
-	networkInfo.inUDP = *inUDP
-
-	NetInfo = networkInfo
-	return nil
+	log.Debug().Str("Target", target.String()).Msg("Sent PING to target")
 }
 
-// Function that eternally listens for- and handles Packets
-func Listen() {
-	fmt.Println("Beginning to listen on ", NetInfo.LocalIPAddr)
-
-	var p Packet
-	for {
-		p = awaitPacket()
-		go handlePacket(p) // Handle the packet on a separate thread to avoid wasting time/missing packets
+func (network *Network) SendFindContactMessage(rpc *rpc.RPC) {
+	err := rpc.Send(network.UdpSender, rpc.Target)
+	if err != nil {
+		log.Error().Msgf("Failed to write FIND_NODE RPC to UDP: %s", err.Error())
 	}
+	log.Debug().Str("Target", rpc.Target.String()).Str("rpcId", rpc.RPCId.String()).Msg("Sent FIND_NODE RPC to target")
 }
 
-// Function for pinging a given IP
-//
-// TODO:
-// Once routing is implemented, change to ping a specific Node
-func SendPing(destIP net.IP) {
-	fmt.Println("Pinging ", destIP)
-	sendPacket(createPingPacket(*node.GetNode()), destIP)
+// SendFindContactRespMessage responds to a FIND_NODE RPC by returning the k
+// closest contacts to the key that the node knows of
+func (network *Network) SendFindContactRespMessage(senderId *kademliaid.KademliaID, target *address.Address, rpcId *kademliaid.KademliaID, content *string) {
+
+	rpc := rpc.NewWithID(senderId, fmt.Sprintf("%s %s", "FIND_NODE_RESPONSE", *content), target, rpcId)
+
+	err := rpc.Send(network.UdpSender, target)
+	if err != nil {
+		log.Error().Msgf("Failed to write FIND_NODE_RESPONSE message to UDP: %s", err.Error())
+	}
+	log.Debug().Str("Target", target.String()).Msg("FIND_NODE_RESPONSE sent to target")
 }
 
-// Function for sending a given packet 'p' to a given IP using UDP communication
-func sendPacket(p Packet, destIP net.IP) {
-	// Resolve destination UDP address
-	destAddr, err := net.ResolveUDPAddr("udp", destIP.String()+NetInfo.listenPort)
+func (network *Network) SendFindDataMessage(rpc *rpc.RPC) {
+	err := rpc.Send(network.UdpSender, rpc.Target)
+
 	if err != nil {
-		log.Fatal(err)
+		log.Error().Msgf("Failed to write RPC FIND_VALUE message to UDP: %s", err.Error())
 	}
-
-	// Establish UDP connection
-	connection, err := net.DialUDP("udp", &NetInfo.outUDP, destAddr)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Encode p in order to send it across UDP connection
-	var buffer bytes.Buffer
-	encoder := gob.NewEncoder(&buffer)
-	encodeErr := encoder.Encode(p)
-	if encodeErr != nil {
-		log.Fatal(encodeErr)
-	}
-
-	// Send p
-	_, err = connection.Write(buffer.Bytes())
-	if err != nil {
-		fmt.Println("Could not send packet: ", err)
-	}
-
-	connection.Close()
+	log.Debug().Str("Target", rpc.Target.String()).Msg("Sent FIND_VALUE RPC to target")
 }
 
-// Basic function for awaiting a single Packet. Blocks thread until a Packet is received and then returns it.
-//
-// NOTE: MAKE SURE TO NEVER HAVE MORE THAN ONE AWAITPACKET ALIVE AT A TIME, waiting on the same port is highly illegal
-// and will crash everything :(
-func awaitPacket() Packet {
-	// Begin listening
-	connection, err := net.ListenUDP("udp", &NetInfo.inUDP)
+func (network *Network) SendFindDataRespMessage(senderID *kademliaid.KademliaID, target *address.Address, rpcId *kademliaid.KademliaID, content *string) {
+	rpc := rpc.NewWithID(senderID, fmt.Sprintf("FIND_VALUE_RESP %s", *content), target, rpcId)
+	err := rpc.Send(network.UdpSender, target)
+
 	if err != nil {
-		log.Fatal(err)
+		log.Error().Msgf("Failed to write RPC FIND_VALUE_RESP message to UDP: %s", err.Error())
 	}
-
-	var p Packet
-
-	// Create byte array "buffer" for storing incoming Packet
-	inputBytes := make([]byte, 4096)
-	length, _, _ := connection.ReadFromUDP(inputBytes)
-
-	// Decode encoded Packet back into struct
-	buffer := bytes.NewBuffer(inputBytes[:length])
-	decoder := gob.NewDecoder(buffer)
-	err = decoder.Decode(&p) // <-- Stores the decoded Packet in p
-	if err != nil {
-		fmt.Println("Error decoding incoming packet: ", err)
-	}
-
-	connection.Close()
-	return p
+	log.Debug().Str("Target", target.String()).Msg("Sent FIND_VALUE_RESP RPC to target")
 }
 
-func handlePacket(p Packet) {
-	switch p.PType {
-	case ping:
-		fmt.Println("Received ping from ", p.IP.String(), "\nSender ID: ", hex.EncodeToString(p.ID[:]))
-		sendPacket(createACKPacket(*node.GetNode()), p.IP)
-		break
+func (network *Network) SendStoreMessage(senderId *kademliaid.KademliaID, target *address.Address, data []byte) {
+	rpc := rpc.New(senderId, fmt.Sprintf("%s %s", "STORE", data), target)
+	err := rpc.Send(network.UdpSender, target)
 
-	case find_node:
-		// TODO, probably some routing inside the routing package, followed by sending a return_nodes Packet
-		break
-
-	case find_value:
-		// TODO
-		break
-
-	case store:
-		// TODO
-		break
-
-	case ACK:
-		fmt.Println("Received reply from ", p.IP.String(), "\nSender ID: ", hex.EncodeToString(p.ID[:]))
-		break
-
-	case return_nodes:
-		// TODO
-		break
-
-	case return_value:
-		// TODO
-		break
-
-	default:
-		log.Fatal("Unknown package type received: ", p.PType)
+	if err != nil {
+		log.Error().Msgf("Failed to write RPC STORE message to UDP: %s", err.Error())
 	}
+	log.Debug().Str("Target", target.String()).Msg("Sent STORE RPC to target")
 }

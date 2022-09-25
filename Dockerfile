@@ -4,13 +4,15 @@ WORKDIR /kademlia
 
 COPY . .
 
-#Creates the cli
-RUN go build cmd/cli.go 
-RUN go build -o /docker-gs-ping
+RUN go build cmd/kademlia/kademlia.go && \
+    go build cmd/cli/cli.go 
 
 WORKDIR /kademlia
 
+# Copy binaries
+#COPY --from=0 /kademlia/kademlia /kademlia/cli ./
+
+# Add the binaries to the path
 ENV PATH /kademlia:$PATH
 
-# Run
-CMD [ "/docker-gs-ping" ]
+CMD ["kademlia"]

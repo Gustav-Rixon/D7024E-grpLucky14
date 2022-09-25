@@ -1,14 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"kademlia/internal/address"
 	. "kademlia/internal/kademliaid"
-	"kademlia/internal/network"
 	"kademlia/internal/node"
-	. "kademlia/internal/node"
-	"kademlia/internal/routingtable"
 	"net"
-	"strconv"
-	"strings"
+	"os"
 	"time"
 )
 
@@ -20,27 +18,42 @@ func getDistance(NodeA []byte, NodeB []byte) KademliaID {
 	return result
 }
 
-func main() {
-	//ROUTINGTABLE TESTING CODE
-	node.CreateSelf(NewRandomKademliaID(), network.GetOutboundIP())
-	routingtable.NewRoutingTable(*GetNode())
-
-	// initialize network settings, communicate via port 80
-	network.InitNetwork(80, 90)
-
-	// If the local ip address does not end with 0.2, it is not the supernode and should enter the sendLoop
-	if network.NetInfo.LocalIPAddr.Mask(net.IPv4Mask(0, 0, 255, 255)).String() != "0.0.0.2" {
-		go sendLoop()
+func getHostIP() string {
+	addresses, err := net.InterfaceAddrs()
+	if err != nil {
+		panic("get good")
 	}
+	for _, address := range addresses {
 
-	go network.Listen()
+		// check the address type and if it is not a loopback the display it
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
+}
+
+func main() {
+
+	host, err := os.Hostname()
+	fmt.Println(err)
+	ip := getHostIP()
+	fmt.Println("Starting Node" + host + "ip:" + ip)
+	node := node.Node{}
+	addr := address.New("127.0.0.1:1234")
+	node.Init(addr)
 
 	for {
-		//fmt.Println("Alive") // Debug printout to ensure node is alive
-		time.Sleep(time.Second / 10)
+
+		fmt.Println(node)
+		//fmt.Println(node.RoutingTable.GetContacts())
+		time.Sleep(time.Second * 2)
 	}
 }
 
+/*
 // Basic test function for constantly pinging the supernode
 func sendLoop() {
 	networkPrefix1, _ := strconv.Atoi(strings.Split(network.NetInfo.LocalIPAddr.String(), ".")[0])
@@ -54,3 +67,4 @@ func sendLoop() {
 		time.Sleep(time.Second * 3)
 	}
 }
+*/
