@@ -33,10 +33,10 @@ func ParseRPC(requestor *contact.Contact, rpc *rpc.RPC) (RPCCommand, error) {
 	switch identifier := fields[0]; identifier {
 	case "PING":
 		rpcLog.Msg("PING received")
-		cmd = ping.New(requestor.Address, rpc.RPCId)
+		cmd = ping.New(requestor.ID, requestor.Address, rpc.RPCId)
 	case "PONG":
 		rpcLog.Msg("PONG received")
-		cmd = pong.New()
+		cmd = pong.New(requestor.ID, requestor.Address, rpc.RPCId)
 	case "STORE":
 		rpcLog.Msg("STORE received")
 		cmd = new(store.Store)
