@@ -67,6 +67,7 @@ func main() {
 
 }
 
+// This function desides of a node is the Bootstrap or not
 func Bootstrap(addr *address.Address, lport int, ip string) {
 	node := node.Node{}
 	if getHostIP() == "172.18.0.2" {
@@ -77,8 +78,8 @@ func Bootstrap(addr *address.Address, lport int, ip string) {
 	} else {
 		node.Init(addr) //TODO JOIN SUPERNODE
 		addrS := address.New("172.18.0.2:8888")
-		node.AddRout(addrS)
-		fmt.Println(node.RoutingTable.GetContacts())
+		node.AddRout(addrS)                          //REMOVE LATER
+		fmt.Println(node.RoutingTable.GetContacts()) // REMOVE LATER TESTING NSLOOKUP
 		go cmdlistener.Listen(&node)
 		listener.Listen(ip, lport, &node) // THE POINT OF NO RETURN
 	}
