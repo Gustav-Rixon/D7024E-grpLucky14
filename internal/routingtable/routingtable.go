@@ -38,8 +38,11 @@ func NewRoutingTable(me node.Node) {
 // AddContact add a new contact to the correct Bucket
 // ********************************************************************
 // THIS PROBABLY ADDS CONTACTS TO THE WRONG BUCKETS, getBucketIndex() should take the node that we intend to put in, right now its taking itself????
+// ******************************
+// PROBABLY FIXED NOW
 func (routingTable *RoutingTable) AddContact(id [kademliaid.IDLength]byte, ip net.IP) {
-	bucketIndex := routingTable.getBucketIndex(*node.GetNode())
+	tempNode := node.NewNode(id, ip)
+	bucketIndex := routingTable.getBucketIndex(tempNode)
 	bucket := routingTable.buckets[bucketIndex]
 	bucket.AddToBucket(id, ip)
 }
