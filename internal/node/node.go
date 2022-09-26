@@ -119,24 +119,18 @@ func (node *Node) NodeLookup(hash *kademliaid.KademliaID) []contact.Contact {
 	//TODO CREATE NODELOOKUP SO THAT I CAN FIND DATA ON NODES THAT ARE NOT IN TABLE
 	candidats := node.FindKClosest(hash, node.ID, 3)
 	fmt.Println(candidats)
+
+	/*
+
+		for each node start an go routine
+			Each routine will check its address for TARGET(node,value,idk) locally
+				If TARGET found GG. Send an RPC call
+				Else Forward to its ALPHA NODES
+
+
+
+	*/
+
 	return candidats
-
-}
-
-// Node lookup retunrs the k closest node's to the given key
-// WIll HARD CODE THE SHIT OUT OF THIS - GURX
-// What does the lookup need to have?
-//
-//	Probe K NODES FUCK MY LIFE
-func (node *Node) nodeLookup(id *kademliaid.KademliaID) []contact.Contact {
-
-	//LOOP ALL NODES? NAA CLOSESTS RIGHT?
-	for {
-
-	}
-}
-
-// In the paper they call the number of probing alpha right?
-func (node *Node) probeAlhpaNodes() {
 
 }
