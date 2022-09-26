@@ -3,7 +3,6 @@ package get
 //TODO GET THE BREaD
 import (
 	"errors"
-	"fmt"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 
@@ -25,7 +24,7 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 	} else {
 		closestNodes := node.FindKClosest(&key, nil, 3)
 		targetNode := closestNodes[0]
-		fmt.Println(targetNode)
+		value += ", from " + targetNode.String()
 
 	}
 	if value == "" {
