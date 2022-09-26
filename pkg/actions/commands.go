@@ -58,6 +58,22 @@ func Commands(msg *[]byte) {
 				return nil
 			},
 		},
+		{
+			Name:  "getTable",
+			Usage: "Get contact of Routing table",
+			Action: func(c *cli.Context) error {
+				sendMessage(msg)
+				return nil
+			},
+		},
+		{
+			Name:  "nodeLookup",
+			Usage: "Get contact of Routing table",
+			Action: func(c *cli.Context) error {
+				sendMessage(msg)
+				return nil
+			},
+		},
 	}
 
 	err := app.Run(os.Args)
