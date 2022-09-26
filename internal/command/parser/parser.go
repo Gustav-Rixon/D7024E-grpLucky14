@@ -5,6 +5,8 @@ import (
 
 	"kademlia/internal/command/commands/add"
 	"kademlia/internal/command/commands/get"
+	"kademlia/internal/command/commands/getTable"
+	"kademlia/internal/command/commands/nodeLookup"
 	"kademlia/internal/command/commands/ping"
 	"kademlia/internal/command/commands/put"
 
@@ -41,6 +43,12 @@ func ParseCmd(s string) Command {
 
 	case "add":
 		command = new(add.Add)
+
+	case "getTable":
+		command = new(getTable.GetTable)
+
+	case "nodeLookup":
+		command = new(nodeLookup.NodeLookup)
 
 	default:
 		log.Error().Str("command", cmd).Msg("Received unknown command")
