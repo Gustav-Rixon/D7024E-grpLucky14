@@ -50,6 +50,9 @@ func ParseCmd(s string) Command {
 	case "nodeLookup":
 		command = new(nodeLookup.NodeLookup)
 
+	//case "findValue":
+	//	command = new()
+
 	default:
 		log.Error().Str("command", cmd).Msg("Received unknown command")
 		return nil
