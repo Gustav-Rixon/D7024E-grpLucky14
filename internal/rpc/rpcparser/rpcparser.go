@@ -43,7 +43,7 @@ func ParseRPC(requestor *contact.Contact, rpc *rpc.RPC) (RPCCommand, error) {
 
 	case "FIND_NODE":
 		rpcLog.Msg("FIND_NODE received")
-		cmd = findnode.New(requestor, requestor.Address, rpc.RPCId)
+		cmd = findnode.New(requestor, rpc.RPCId)
 
 	default:
 		err = errors.New(fmt.Sprintf("Received unknown RPC %s", identifier))
