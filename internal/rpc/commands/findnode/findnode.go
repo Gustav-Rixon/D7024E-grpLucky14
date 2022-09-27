@@ -2,7 +2,6 @@ package findnode
 
 import (
 	"errors"
-	"kademlia/internal/address"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
@@ -10,26 +9,25 @@ import (
 
 // IN NSLLOCKUP SENDERID = TARGETID NOTE FOR GURX
 type FindNodeRPC struct {
-	senderID      *kademliaid.KademliaID
-	senderAddress *address.Address
-	targetID      *kademliaid.KademliaID
-	rpcId         *kademliaid.KademliaID
+	targetID  *string          //kommer bara vara en string som input ellr?
+	requestor *contact.Contact // Contact infon om vem som fråga
+	rpcId     *kademliaid.KademliaID
 }
 
-func New(senderID *kademliaid.KademliaID, senderAddress *address.Address, targetID *kademliaid.KademliaID, rpcId *kademliaid.KademliaID) FindNodeRPC {
-	return FindNodeRPC{senderID: senderID, senderAddress: senderAddress, targetID: targetID, rpcId: rpcId}
+func New(requestor *contact.Contact, rpcId *kademliaid.KademliaID) *FindNodeRPC {
+	return &FindNodeRPC{requestor: requestor, rpcId: rpcId}
 }
 
-func (targetID *FindNodeRPC) Execute(node *node.Node) ([]contact.Contact, error) {
-	candidats := node.FindKClosest(targetID.targetID, node.ID, 3)
-	return candidats, nil
+func (targetID *FindNodeRPC) Execute(node *node.Node) {
+	candidats := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.rpcId, 3)
+	contact := contact.SerializeContacts(candidats)
+	node.Network.SendFindDataRespMessage(node.ID, targetID.requestor.Address, targetID.rpcId, &contact)
 }
 
-func (targetID *FindNodeRPC) ParseOptions(options []string) error {
-	if len(options) < 1 {
+func (targetID *FindNodeRPC) ParseOptions(options *[]string) error {
+	if len(*options) < 1 {
 		return errors.New("Missing hash")
 	}
-	targetID.targetID = kademliaid.FromString(options[0])
 	return nil
 }
 
