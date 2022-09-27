@@ -2,13 +2,13 @@ package ping
 
 import (
 	"kademlia/internal/address"
-	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 
 	"github.com/rs/zerolog/log"
 )
 
+// TODO RENAME ALL RPC COMMANDS TO <NAME>RPC
 type Ping struct {
 	senderID      *kademliaid.KademliaID
 	senderAddress *address.Address
@@ -22,8 +22,7 @@ func New(senderID *kademliaid.KademliaID, senderAddress *address.Address, rpcId 
 func (ping Ping) Execute(node *node.Node) {
 	log.Trace().Msg("Executing PING RPC")
 	// Update routing table
-	node.RoutingTable.AddContact(contact.NewContact(ping.senderID, ping.senderAddress))
-	// Respond with pong
+	// Respond with pong and add it to its table
 	node.Network.SendPongMessage(node.ID, ping.senderAddress, ping.rpcId)
 }
 

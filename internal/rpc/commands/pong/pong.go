@@ -2,7 +2,6 @@ package pong
 
 import (
 	"kademlia/internal/address"
-	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 )
@@ -18,8 +17,7 @@ func New(senderID *kademliaid.KademliaID, senderAddress *address.Address, rpcId 
 }
 
 func (pong Pong) Execute(node *node.Node) {
-	// Update routing table
-	node.RoutingTable.AddContact(contact.NewContact(pong.senderID, pong.senderAddress))
+	// MUST BE EMPTY OR CHOASSS
 }
 
 func (pong Pong) ParseOptions(options *[]string) error {

@@ -116,13 +116,13 @@ func (node *Node) NewRPC(content string, target *address.Address) rpc.RPC {
 }
 
 func (node *Node) NodeLookup(hash *kademliaid.KademliaID) []contact.Contact {
-	//TODO CREATE NODELOOKUP SO THAT I CAN FIND DATA ON NODES THAT ARE NOT IN TABLE
+	//TODO CREATE NODELOOKUP SO THAT It CAN find close NODES THAT ARE NOT IN TABLE
 	candidats := node.FindKClosest(hash, node.ID, 3)
 	fmt.Println(candidats)
 
 	/*
 
-		for each node start an go routine
+		for each node Send an RPC telling them to do a nodeLookup to
 			Each routine will check its address for TARGET(node,value,idk) locally
 				If TARGET found GG. Send an RPC call
 				Else Forward to its ALPHA NODES
