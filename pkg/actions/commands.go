@@ -67,8 +67,8 @@ func Commands(msg *[]byte) {
 			},
 		},
 		{
-			Name:  "nodeLookup",
-			Usage: "Get contact of Routing table",
+			Name:  "findNode",
+			Usage: "Does a ns lookup on node ID",
 			Action: func(c *cli.Context) error {
 				sendMessage(msg)
 				return nil

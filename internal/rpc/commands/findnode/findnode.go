@@ -5,6 +5,8 @@ import (
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
+
+	"github.com/rs/zerolog/log"
 )
 
 // IN NSLLOCKUP SENDERID = TARGETID NOTE FOR GURX
@@ -19,6 +21,7 @@ func New(requestor *contact.Contact, rpcId *kademliaid.KademliaID) *FindNodeRPC 
 }
 
 func (targetID *FindNodeRPC) Execute(node *node.Node) {
+	log.Trace().Msg("Executing FIND_NODE RPC")
 	candidats := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.rpcId, 3)
 	contact := contact.SerializeContacts(candidats)
 	node.Network.SendFindDataRespMessage(node.ID, targetID.requestor.Address, targetID.rpcId, &contact)

@@ -47,7 +47,7 @@ func ParseCmd(s string) Command {
 	case "getTable":
 		command = new(getTable.GetTable)
 
-	case "nodeLookup":
+	case "findNode":
 		command = new(nodeLookup.NodeLookup)
 
 	//case "findValue":
