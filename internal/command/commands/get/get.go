@@ -22,6 +22,10 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 	if value != "" {
 		value += ", from local node"
 	} else {
+
+		// GOGOG RPC FIND_VALUE
+		//RPC DID NOT FIND
+		//RPC FOUND
 		closestNodes := node.FindKClosest(&key, nil, 3)
 		targetNode := closestNodes[0]
 		value += ", from " + targetNode.String()

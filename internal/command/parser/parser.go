@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"kademlia/internal/command/commands/add"
+	"kademlia/internal/command/commands/findnode"
 	"kademlia/internal/command/commands/get"
 	"kademlia/internal/command/commands/getTable"
-	"kademlia/internal/command/commands/nodeLookup"
 	"kademlia/internal/command/commands/ping"
 	"kademlia/internal/command/commands/put"
 
@@ -48,7 +48,7 @@ func ParseCmd(s string) Command {
 		command = new(getTable.GetTable)
 
 	case "findNode":
-		command = new(nodeLookup.NodeLookup)
+		command = new(findnode.FindNode)
 
 	//case "findValue":
 	//	command = new()

@@ -2,6 +2,7 @@ package put
 
 import (
 	"errors"
+	"fmt"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 	"strings"
@@ -17,6 +18,10 @@ const k = 3
 
 func (put *Put) Execute(node *node.Node) (string, error) {
 	log.Trace().Msg("Executing put command")
+
+	fmt.Println("!!!!!!!!!!!!!!!")
+	fmt.Println(put.fileContent)
+	fmt.Println("!!!!!!!!!!!!!!!")
 
 	key := kademliaid.NewKademliaID(&put.fileContent)
 	closestNodes := node.FindKClosest(&key, nil, k)

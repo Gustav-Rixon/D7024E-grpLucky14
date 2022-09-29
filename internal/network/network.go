@@ -50,13 +50,13 @@ func (network *Network) SendFindContactMessage(rpc *rpc.RPC) {
 // closest contacts to the key that the node knows of
 func (network *Network) SendFindContactRespMessage(senderId *kademliaid.KademliaID, target *address.Address, rpcId *kademliaid.KademliaID, content *string) {
 
-	rpc := rpc.NewWithID(senderId, fmt.Sprintf("%s %s", "FIND_NODE_RESPONSE", *content), target, rpcId)
+	rpc := rpc.NewWithID(senderId, fmt.Sprintf("%s %s", "FIND_NODE_RESP", *content), target, rpcId)
 
 	err := rpc.Send(network.UdpSender, target)
 	if err != nil {
-		log.Error().Msgf("Failed to write FIND_NODE_RESPONSE message to UDP: %s", err.Error())
+		log.Error().Msgf("Failed to write FIND_NODE_RESP message to UDP: %s", err.Error())
 	}
-	log.Debug().Str("Target", target.String()).Msg("FIND_NODE_RESPONSE sent to target")
+	log.Debug().Str("Target", target.String()).Msg("FIND_NODE_RESP sent to target")
 }
 
 func (network *Network) SendFindDataMessage(rpc *rpc.RPC) {

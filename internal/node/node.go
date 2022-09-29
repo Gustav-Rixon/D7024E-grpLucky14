@@ -1,7 +1,6 @@
 package node
 
 import (
-	"fmt"
 	"kademlia/internal/address"
 	"kademlia/internal/contact"
 	"kademlia/internal/datastore"
@@ -118,7 +117,6 @@ func (node *Node) NewRPC(content string, target *address.Address) rpc.RPC {
 func (node *Node) NodeLookup(hash *kademliaid.KademliaID) []contact.Contact {
 	//TODO CREATE NODELOOKUP SO THAT It CAN find close NODES THAT ARE NOT IN TABLE
 	candidats := node.FindKClosest(hash, node.ID, 3)
-	fmt.Println(candidats)
 
 	/*
 
@@ -134,3 +132,15 @@ func (node *Node) NodeLookup(hash *kademliaid.KademliaID) []contact.Contact {
 	return candidats
 
 }
+
+// Finds data
+/*
+func (node *Node) FindData(hash *kademliaid.KademliaID) string {
+
+	data := ""
+	for {
+
+	}
+
+}
+*/

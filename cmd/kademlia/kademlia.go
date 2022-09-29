@@ -77,8 +77,7 @@ func Bootstrap(addr *address.Address, lport int, ip string) {
 		listener.Listen(ip, lport, &node)
 	} else {
 		node.Init(addr) //TODO JOIN SUPERNODE
-		addrS := address.New("172.18.0.2:8888")
-		node.AddRout(addrS)                          //REMOVE LATER
+		fmt.Println(node.ID)
 		fmt.Println(node.RoutingTable.GetContacts()) // REMOVE LATER TESTING NSLOOKUP
 		go cmdlistener.Listen(&node)
 		listener.Listen(ip, lport, &node) // THE POINT OF NO RETURN
