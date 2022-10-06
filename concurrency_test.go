@@ -1,4 +1,4 @@
-package main
+package notarealpackage
 
 import (
 	"math/rand"
@@ -90,7 +90,7 @@ func initHandleLoop() {
 	} else {
 		activeBool = true
 		mutB.Unlock()
-		go handleLoop()
+		handleLoop()
 	}
 }
 
