@@ -3,6 +3,7 @@ package findnoderesponse
 import (
 	"errors"
 	"fmt"
+	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 	"strings"
@@ -19,15 +20,18 @@ func New(rpcId *kademliaid.KademliaID) *FindNodeResponse {
 	return &FindNodeResponse{rpcId: rpcId}
 }
 
+// Will insert values to routing table
 func (Resp *FindNodeResponse) Execute(node *node.Node) {
 	log.Trace().Msg("Executing FIND_NODE_RESP RPC")
 
-	fmt.Println("!!!!!!!")
-	fmt.Println(Resp)
-	fmt.Println(Resp.data)
-	fmt.Println(*Resp.data)
-	fmt.Println(&Resp.data)
-	fmt.Println("!!!!!!!")
+	test := *Resp.data
+
+	test2, err := contact.Deserialize(&test)
+	fmt.Println(err)
+	fmt.Println("!!!!")
+	fmt.Println(test)
+	fmt.Println("!!!!")
+	fmt.Println(test2)
 
 }
 
