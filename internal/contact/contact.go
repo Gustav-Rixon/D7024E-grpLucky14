@@ -49,7 +49,7 @@ func SerializeContacts(contacts []Contact) string {
 	s := ""
 	for i, contact := range contacts {
 		if i != len(contacts)-1 {
-			s += contact.serialize() + " "
+			s += contact.serialize() + "%"
 		} else {
 			s += contact.serialize()
 		}
