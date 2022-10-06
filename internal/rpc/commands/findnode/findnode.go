@@ -21,14 +21,12 @@ func New(requestor *contact.Contact, rpcId *kademliaid.KademliaID) *FindNodeRPC 
 	return &FindNodeRPC{requestor: requestor, rpcId: rpcId}
 }
 
+// [{98521a170970a249b276ee78eecc60853ff1c9c1 172.18.0.4:8888 0xc0000c8678} {9514e18b679622b8d59991a6298559cb03099d64 172.18.0.2:8888 0xc0000c8660}]
 func (targetID *FindNodeRPC) Execute(node *node.Node) {
 	log.Trace().Msg("Executing FIND_NODE RPC")
-	fmt.Println("FAFAFAFA")
-	fmt.Println(targetID)
-	fmt.Println("@@@@@@@@@@@@")
-	fmt.Println(targetID.rpcId)
 	candidats := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.rpcId, 3)
 	contact := contact.SerializeContacts(candidats)
+	fmt.Println(contact)
 	node.Network.SendFindContactRespMessage(node.ID, targetID.requestor.Address, targetID.rpcId, &contact)
 }
 
