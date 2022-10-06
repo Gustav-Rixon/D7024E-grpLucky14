@@ -2,12 +2,14 @@ package network
 
 import (
 	"fmt"
+
 	"kademlia/internal/address"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/network/sender"
 	"kademlia/internal/rpc"
 
 	"github.com/rs/zerolog/log"
+
 )
 
 type Network struct {
@@ -81,6 +83,7 @@ func (network *Network) SendFindDataRespMessage(senderID *kademliaid.KademliaID,
 func (network *Network) SendStoreMessage(senderId *kademliaid.KademliaID, target *address.Address, data []byte) {
 	rpc := rpc.New(senderId, fmt.Sprintf("%s %s", "STORE", data), target)
 	err := rpc.Send(network.UdpSender, target)
+
 
 	if err != nil {
 		log.Error().Msgf("Failed to write RPC STORE message to UDP: %s", err.Error())

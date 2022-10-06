@@ -46,6 +46,7 @@ func (node *Node) Init(address *address.Address) {
 		Network:      network.Network{UdpSender: Sender},
 		bootstrap:    false,
 	}
+
 }
 
 // SUPER/BOOT will have the ID: 9514e18b679622b8d59991a6298559cb03099d64
@@ -141,6 +142,5 @@ func (node *Node) FindData(hash *kademliaid.KademliaID) string {
 	for {
 
 	}
-
 }
 */

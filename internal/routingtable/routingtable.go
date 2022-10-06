@@ -17,6 +17,7 @@ type RoutingTable struct {
 }
 
 // NewRoutingTable returns a new instance of a RoutingTable
+
 func NewRoutingTable(me contact.Contact) *RoutingTable {
 	routingTable := &RoutingTable{}
 	for i := 0; i < kademliaid.IDLength*8; i++ {
@@ -39,10 +40,12 @@ func (routingTable *RoutingTable) AddContact(contact contact.Contact) {
 		bucket.AddContact(contact)
 	} else {
 		fmt.Println("ajajajajaj")
+
 	}
 }
 
 // FindClosestContacts finds the count closest Contacts to the target in the RoutingTable
+
 func (routingTable *RoutingTable) FindClosestContacts(target *kademliaid.KademliaID, requestorID *kademliaid.KademliaID, count int) []contact.Contact {
 	var candidates contact.ContactCandidates
 	bucketIndex := routingTable.GetBucketIndex(target)
@@ -55,6 +58,7 @@ func (routingTable *RoutingTable) FindClosestContacts(target *kademliaid.Kademli
 	} else {
 		candidates.Append(bucket.GetContactAndCalcDistance(target))
 	}
+
 
 	for i := 1; (bucketIndex-i >= 0 || bucketIndex+i < kademliaid.IDLength*8) && candidates.Len() < count; i++ {
 		if bucketIndex-i >= 0 {
@@ -79,7 +83,7 @@ func (routingTable *RoutingTable) FindClosestContacts(target *kademliaid.Kademli
 		}
 	}
 
-	candidates.Sort()
+	sort.Sort(candidates)
 
 	if count > candidates.Len() {
 		count = candidates.Len()
@@ -87,7 +91,6 @@ func (routingTable *RoutingTable) FindClosestContacts(target *kademliaid.Kademli
 
 	return candidates.GetContacts(count)
 }
-
 func (routingTable *RoutingTable) GetContacts() string {
 	if routingTable == nil {
 		return "The node is not initilized, it does not contain a routing table or any contacts"

@@ -21,6 +21,47 @@ func NewBucket() *Bucket {
 	return bucket
 }
 
+// Searches through a bucket for an ID from Packet, if the ID is found the entry corresponding to the ID get moved to the front of the buckets list
+// OTHERWISE creates a new node instance and places it into the bucket
+// THIS SHOULD BE CALLED in the listen function every time the node receives a message as per the kademlia specification.
+func (b Bucket) AddToBucket(id [IDLength]byte, ip net.IP) {
+	var element *list.Element
+	for e := b.list.Front(); e != nil; e = e.Next() {
+		nodeID := e.Value.(Node).ID
+
+		if id == nodeID {
+			element = e
+		}
+	}
+	if element == nil {
+		if b.list.Len() < bucketSize {
+			n := NewNode(id, ip)
+			b.list.PushFront(n)
+			fmt.Println("New Node added to bucket")
+			n.CalcDistance(node.GetNode().ID)
+			fmt.Println("Distance from me to node = ", n.GetDistance())
+		}
+	} else {
+		b.list.MoveToFront(element)
+		fmt.Println("Node found in bucket, moving to front")
+	}
+}
+
+// GetContactAndCalcDistance returns an array of Contacts where
+// the distance has already been calculated
+func (bucket *Bucket) GetContactAndCalcDistance(target node.Node) []node.Node {
+	var contacts []node.Node
+
+	for elt := bucket.list.Front(); elt != nil; elt = elt.Next() {
+		node := elt.Value.(Node)
+		node.CalcDistance(target.ID)
+		contacts = append(contacts, node)
+	}
+
+	return contacts
+}
+
+
 // AddContact adds the Contact to the front of the bucket
 // or moves it to the front of the bucket if it already existed
 func (bucket *Bucket) AddContact(contact Contact) {

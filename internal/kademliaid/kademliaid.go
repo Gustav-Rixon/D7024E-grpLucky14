@@ -14,15 +14,19 @@ const IDLength = 20
 type KademliaID [IDLength]byte
 
 // NewKademliaID returns a new instance of a KademliaID based on the string input
+
 func NewKademliaID(data *string) KademliaID {
 	hash := sha1.Sum([]byte(*data))
 	return hash
+
 }
 
 // NewRandomKademliaID returns a new instance of a random KademliaID,
 // change this to a better version if you like
+
 func NewRandomKademliaID() *KademliaID {
 	rand.Seed(time.Now().UTC().UnixNano()) // Update the seed
+
 	newKademliaID := KademliaID{}
 	for i := 0; i < IDLength; i++ {
 		newKademliaID[i] = uint8(rand.Intn(256))
