@@ -45,7 +45,7 @@ func New() DataStore {
 				if entry.expiry != nil && entry.expiry.Before(now) {
 					fmt.Println(datastore.store[id].value)
 					delete(datastore.store, id)
-					fmt.Println("wow this shit is gone")
+					fmt.Println("Data object expired")
 				}
 			}
 			datastore.lock.Unlock()
@@ -73,6 +73,8 @@ func (datastorage *DataStore) GetValue(key kademliaid.KademliaID) string {
 	datastorage.lock.Lock()
 	defer datastorage.lock.Unlock()
 	data := datastorage.store[key]
+	expiry := time.Now().Add(TTL)
+	data.expiry = &expiry
 	if data != nil {
 		return data.value
 
@@ -86,6 +88,8 @@ func (datastorage *DataStore) Get(key kademliaid.KademliaID) string {
 	datastorage.lock.Lock()
 	defer datastorage.lock.Unlock()
 	data := datastorage.store[key]
+	expiry := time.Now().Add(TTL)
+	data.expiry = &expiry
 	if data != nil {
 		return data.value
 
