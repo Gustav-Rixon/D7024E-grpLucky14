@@ -1,39 +1,77 @@
 package datastore
 
 import (
+	"fmt"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/rpc"
+	"sync"
+	"time"
 )
 
 type DataMap = map[kademliaid.KademliaID]*Data
 
 type DataStore struct {
-	store DataMap
+	store   DataMap
+	timeTTL time.Duration
+	lock    *sync.RWMutex
 }
 
 type Data struct {
+	expiry   *time.Time
 	value    string
 	Contacts *[]contact.Contact
 }
 
+const TTL time.Duration = 30 * time.Second
+
 // Create the hash map
 func New() DataStore {
-	return DataStore{make(DataMap)}
+
+	datastore := &DataStore{
+		store:   make(DataMap),
+		timeTTL: TTL,
+		lock:    &sync.RWMutex{},
+	}
+
+	go func() {
+		ticker := time.NewTicker(datastore.timeTTL)
+		for {
+			now := <-ticker.C
+
+			datastore.lock.Lock()
+
+			for id, entry := range datastore.store {
+				if entry.expiry != nil && entry.expiry.Before(now) {
+					fmt.Println(datastore.store[id].value)
+					delete(datastore.store, id)
+					fmt.Println("wow this shit is gone")
+				}
+			}
+			datastore.lock.Unlock()
+		}
+	}()
+	return *datastore
 }
 
 // Insert a data into the store.
 func (datastorage *DataStore) Insert(value string, contacts *[]contact.Contact, sender rpc.Sender) {
+	datastorage.lock.Lock()
+	defer datastorage.lock.Unlock()
 	id := kademliaid.NewKademliaID(&value)
 	data := Data{}
 	data.value = value
 	data.Contacts = contacts
+	expiry := time.Now().Add(TTL)
+	data.expiry = &expiry
 	datastorage.store[id] = &data
 }
 
 // Gets the value from the store associated with the key.
 // Returns an empty string if the key is not found
 func (datastorage *DataStore) GetValue(key kademliaid.KademliaID) string {
+	datastorage.lock.Lock()
+	defer datastorage.lock.Unlock()
 	data := datastorage.store[key]
 	if data != nil {
 		return data.value
@@ -44,8 +82,10 @@ func (datastorage *DataStore) GetValue(key kademliaid.KademliaID) string {
 
 // Gets the value from the store associated with the key.
 // Returns an empty string if the key is not found
-func (d *DataStore) Get(key kademliaid.KademliaID) string {
-	data := d.store[key]
+func (datastorage *DataStore) Get(key kademliaid.KademliaID) string {
+	datastorage.lock.Lock()
+	defer datastorage.lock.Unlock()
+	data := datastorage.store[key]
 	if data != nil {
 		return data.value
 

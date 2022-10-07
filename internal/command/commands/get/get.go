@@ -3,6 +3,7 @@ package get
 //TODO GET THE BREaD
 import (
 	"errors"
+	"fmt"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 
@@ -15,9 +16,9 @@ type Get struct {
 
 func (get *Get) Execute(node *node.Node) (string, error) {
 	log.Trace().Msg("Executing get command")
-
 	// Check local storage
 	value := node.DataStore.Get(get.hash)
+	fmt.Println(value)
 	key := kademliaid.NewKademliaID(&value)
 	if value != "" {
 		value += ", from local node"
