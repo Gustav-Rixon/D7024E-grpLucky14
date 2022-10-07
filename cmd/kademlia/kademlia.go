@@ -6,6 +6,7 @@ import (
 	cmdlistener "kademlia/internal/command/listener"
 	"kademlia/internal/network/listener"
 	"kademlia/internal/node"
+	"kademlia/internal/rpc/rpcqueue"
 	"net"
 	"os"
 	"strconv"
@@ -70,16 +71,17 @@ func main() {
 // This function desides of a node is the Bootstrap or not
 func Bootstrap(addr *address.Address, lport int, ip string) {
 	node := node.Node{}
+	rpcQ := rpcqueue.New()
 	if getHostIP() == "172.18.0.2" {
 		node.InitBOOT(addr)
 		fmt.Println(node.ID)
 		go cmdlistener.Listen(&node)
-		listener.Listen(ip, lport, &node)
+		listener.Listen(ip, lport, &node, &rpcQ)
 	} else {
 		node.Init(addr) //TODO JOIN SUPERNODE
 		fmt.Println(node.ID)
 		fmt.Println(node.RoutingTable.GetContacts()) // REMOVE LATER TESTING NSLOOKUP
 		go cmdlistener.Listen(&node)
-		listener.Listen(ip, lport, &node) // THE POINT OF NO RETURN
+		listener.Listen(ip, lport, &node, &rpcQ) // THE POINT OF NO RETURN
 	}
 }
