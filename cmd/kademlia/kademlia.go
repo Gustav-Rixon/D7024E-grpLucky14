@@ -73,7 +73,7 @@ func main() {
 func Bootstrap(addr *address.Address, lport int, ip string) {
 	node := node.Node{}
 	rpcQ := rpcqueue.New()
-	if getHostIP() == "172.18.0.2" {
+	if getHostIP() == "172.21.0.2" {
 		node.InitBOOT(addr)
 		fmt.Println(node.ID)
 		go cmdlistener.Listen(&node)
@@ -83,6 +83,8 @@ func Bootstrap(addr *address.Address, lport int, ip string) {
 		node.Init(addr) //TODO JOIN SUPERNODE
 		fmt.Println(node.ID)
 		fmt.Println(node.RoutingTable.GetContacts()) // REMOVE LATER TESTING NSLOOKUP
+		adr := address.New("172.21.0.2")             //REMOVE LATTER TESTING NODELOKKUP
+		node.Network.SendPingMessage(node.ID, adr)   ////REMOVE LATTER TESTING NODELOKKUP
 		go cmdlistener.Listen(&node)
 		go restAPI.Listen(&node)
 		listener.Listen(ip, lport, &node, &rpcQ) // THE POINT OF NO RETURN
