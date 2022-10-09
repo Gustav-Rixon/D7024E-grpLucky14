@@ -16,10 +16,12 @@ type RPCHandler struct {
 	Node *node.Node
 }
 
+// Get endpoint
 func (handler *RPCHandler) Get(w http.ResponseWriter, r *http.Request) {
 	log.Trace().Msg("GET request received")
 	hash := path.Base(r.URL.String())
 
+	//If the Get command only retrives the endpoint the hash is missing.
 	if hash == "objects" {
 		log.Info().Msg("GET request received: Hash missing")
 		w.Write([]byte("Missing hash"))
@@ -34,8 +36,9 @@ func (handler *RPCHandler) Get(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(value))
 }
 
+// Post endpoint
 func (handler *RPCHandler) Post(w http.ResponseWriter, r *http.Request) {
-	log.Trace().Msg("Received POST request")
+	log.Trace().Msg("POST request received")
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Error().Msgf("Error reading request body %s", err.Error())
@@ -53,7 +56,7 @@ func (handler *RPCHandler) Post(w http.ResponseWriter, r *http.Request) {
 	sData := string(data)
 	hash := kademliaid.NewKademliaID(&sData)
 	w.Header().Add("Location", "/objects/"+hash.String())
-	w.WriteHeader(201)
+	w.WriteHeader(201) // reply with 201
 
 	w.Write([]byte(value))
 }

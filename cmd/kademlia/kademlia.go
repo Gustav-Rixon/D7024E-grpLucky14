@@ -5,6 +5,7 @@ import (
 	"kademlia/internal/address"
 	cmdlistener "kademlia/internal/command/listener"
 	"kademlia/internal/network/listener"
+	"kademlia/internal/network/restAPI"
 	"kademlia/internal/node"
 	"kademlia/internal/rpc/rpcqueue"
 	"net"
@@ -76,12 +77,14 @@ func Bootstrap(addr *address.Address, lport int, ip string) {
 		node.InitBOOT(addr)
 		fmt.Println(node.ID)
 		go cmdlistener.Listen(&node)
+		go restAPI.Listen(&node)
 		listener.Listen(ip, lport, &node, &rpcQ)
 	} else {
 		node.Init(addr) //TODO JOIN SUPERNODE
 		fmt.Println(node.ID)
 		fmt.Println(node.RoutingTable.GetContacts()) // REMOVE LATER TESTING NSLOOKUP
 		go cmdlistener.Listen(&node)
+		go restAPI.Listen(&node)
 		listener.Listen(ip, lport, &node, &rpcQ) // THE POINT OF NO RETURN
 	}
 }

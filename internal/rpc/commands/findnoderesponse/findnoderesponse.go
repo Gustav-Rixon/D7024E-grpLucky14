@@ -27,6 +27,7 @@ func (Resp *FindNodeResponse) Execute(node *node.Node) {
 	test := *Resp.data
 
 	test2, err := contact.Deserialize(&test)
+	node.RoutingTable.AddContact()
 	fmt.Println(err)
 	fmt.Println("!!!!")
 	fmt.Println(test)
