@@ -7,9 +7,9 @@
 
 version: "3"
 services:
-  nodeTest:
+  kademlia:
     image: kademlia:latest # Make sure your Docker image has this name.
-    init: true #test
+    #init: true #test
     build:
       context: .
       dockerfile: Dockerfile
