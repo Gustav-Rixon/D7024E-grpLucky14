@@ -6,6 +6,7 @@ import (
 	"kademlia/internal/node"
 	"kademlia/internal/rpc"
 	"kademlia/internal/rpc/rpcparser"
+	"kademlia/internal/rpc/rpcqueue"
 	"net"
 	"strings"
 
@@ -16,7 +17,7 @@ import (
 
 // Sauce https://jameshfisher.com/2016/11/17/udp-in-go/ and https://pkg.go.dev/net
 // Listen initiates a UDP server
-func Listen(ip string, port int, node *node.Node) {
+func Listen(ip string, port int, node *node.Node, rpcQ *rpcqueue.RPCQueue) {
 	addr := net.UDPAddr{IP: net.ParseIP(ip), Port: port}
 	ln, err := net.ListenUDP("udp4", &addr)
 	defer ln.Close()
@@ -25,9 +26,9 @@ func Listen(ip string, port int, node *node.Node) {
 	}
 	log.Info().Str("Address", addr.String()).Msg("Listening on UDP packets on address")
 
-	waitForMessages(ln, node)
+	waitForMessages(ln, node, rpcQ)
 }
-func waitForMessages(con *net.UDPConn, node *node.Node) {
+func waitForMessages(con *net.UDPConn, node *node.Node, rpcQ *rpcqueue.RPCQueue) {
 	for {
 		//https://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
 		// I trust this post blindly
@@ -53,7 +54,7 @@ func waitForMessages(con *net.UDPConn, node *node.Node) {
 
 				options := strings.Split(rpcMsg.Content, " ")[1:]
 				if err = cmd.ParseOptions(&options); err == nil {
-					cmd.Execute(node)
+					rpcQ.AddToQueue(node, cmd)
 				} else {
 					log.Warn().
 						Str("Error", err.Error()).

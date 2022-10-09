@@ -9,7 +9,6 @@ import (
 	"kademlia/internal/network/sender"
 	"kademlia/internal/routingtable"
 	"kademlia/internal/rpc"
-	"kademlia/internal/rpcqueue"
 	"os"
 	"strconv"
 	"strings"
@@ -20,7 +19,6 @@ import (
 // Used in main to call on NewRandomKademliaID function
 type Node struct {
 	ID           *kademliaid.KademliaID
-	RPCQueue     *rpcqueue.RPCQueue
 	RoutingTable *routingtable.RoutingTable
 	DataStore    datastore.DataStore
 	Network      network.Network
@@ -42,7 +40,6 @@ func (node *Node) Init(address *address.Address) {
 		ID:           id,
 		DataStore:    datastore.New(),
 		RoutingTable: routingtable.NewRoutingTable(me),
-		RPCQueue:     rpcqueue.New(),
 		Network:      network.Network{UdpSender: Sender},
 		bootstrap:    false,
 	}
@@ -63,7 +60,6 @@ func (node *Node) InitBOOT(address *address.Address) {
 		ID:           &id,
 		DataStore:    datastore.New(),
 		RoutingTable: routingtable.NewRoutingTable(me),
-		RPCQueue:     rpcqueue.New(),
 		Network:      network.Network{UdpSender: Sender},
 		bootstrap:    true,
 	}
