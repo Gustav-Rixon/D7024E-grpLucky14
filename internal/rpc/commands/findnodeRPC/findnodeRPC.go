@@ -1,4 +1,4 @@
-package findnode
+package findnodeRPC
 
 import (
 	"errors"
@@ -24,20 +24,33 @@ func New(requestor *contact.Contact, rpcId *kademliaid.KademliaID) *FindNodeRPC 
 // [{98521a170970a249b276ee78eecc60853ff1c9c1 172.18.0.4:8888 0xc0000c8678} {9514e18b679622b8d59991a6298559cb03099d64 172.18.0.2:8888 0xc0000c8660}]
 func (targetID *FindNodeRPC) Execute(node *node.Node) {
 	log.Trace().Msg("Executing FIND_NODE RPC")
-	candidats := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.rpcId, 3)
-	contact := contact.SerializeContacts(candidats)
-	fmt.Println(contact)
-	node.Network.SendFindContactRespMessage(node.ID, targetID.requestor.Address, targetID.rpcId, &contact)
+
+	// Responde with k clossets nodes
+	kClosest := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.requestor.ID, 1)
+
+	//FÖR felsökning av "Failed to deserialize string"
+
+	fmt.Println("&")
+	fmt.Println(*targetID.targetID)
+	fmt.Println("&")
+
+	fmt.Println("&&")
+	fmt.Println(kClosest)
+	fmt.Println("&&")
+
+	fmt.Println("&&&")
+	fmt.Println(&kClosest)
+	fmt.Println("&&&")
+
+	content := contact.SerializeContacts(kClosest)
+	node.Network.SendFindContactRespMessage(node.ID, targetID.requestor.Address, targetID.rpcId, &content)
+
 }
 
-func (targetID *FindNodeRPC) ParseOptions(options *[]string) error {
-	if len(*options) < 1 {
-		return errors.New("Missing hash")
+func (fn *FindNodeRPC) ParseOptions(options *[]string) error {
+	if len(*options) == 0 {
+		return errors.New("Recieved empty FIND_NODE RPC, Missing ID argument")
 	}
-	targetID.targetID = &(*options)[0]
+	fn.targetID = &(*options)[0]
 	return nil
-}
-
-func (hash *FindNodeRPC) PrintUsage() string {
-	return "USAGE: get <hash>"
 }

@@ -7,13 +7,17 @@ import (
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Add struct {
-	Id, Address string
+	Id      string
+	Address string
 }
 
 func (adr *Add) Execute(node *node.Node) (string, error) {
+	log.Trace().Msg("Executing addcontact command")
 	addr := address.New(adr.Address)
 	node.RoutingTable.AddContact(contact.NewContact(kademliaid.FromString(adr.Id), addr))
 	return "Contact added to node's routingTable: " + fmt.Sprint(addr.String()), nil

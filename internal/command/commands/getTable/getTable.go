@@ -1,9 +1,10 @@
 package getTable
 
 import (
-	"errors"
 	"fmt"
 	"kademlia/internal/node"
+
+	"github.com/rs/zerolog/log"
 )
 
 type GetTable struct {
@@ -11,18 +12,15 @@ type GetTable struct {
 }
 
 func (p GetTable) Execute(node *node.Node) (string, error) {
-	fmt.Println(node.RoutingTable.GetContacts())
-	return "Table its broken!", nil
+	log.Trace().Msg("Executing getcontacts command")
+	fmt.Println(node.RoutingTable.GetContacts()) //For testing
+	return node.RoutingTable.GetContacts(), nil
 }
 
-func (p *GetTable) ParseOptions(options []string) error {
-	if len(options) < 1 {
-		return errors.New("Missing Target")
-	}
-	p.Target = options[0]
+func (g *GetTable) ParseOptions(options []string) error {
 	return nil
 }
 
-func (p *GetTable) PrintUsage() string {
-	return "Usage: ping {target address}"
+func (g *GetTable) PrintUsage() string {
+	return "Usage: getcontacts"
 }

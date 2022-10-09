@@ -103,40 +103,23 @@ func DeserializeContacts(data string, targetId *kademliaid.KademliaID) []*contac
 // FindKClosest returns a list of candidates containing the k closest nodes
 // to the key being searched for (from the nodes own bucket(s))
 func (node *Node) FindKClosest(key *kademliaid.KademliaID, requestorID *kademliaid.KademliaID, k int) []contact.Contact {
-	return node.RoutingTable.FindClosestContacts(key, requestorID, k)
+	KClosest := node.RoutingTable.FindClosestContacts(key, requestorID, k)
+	return KClosest
 }
 
 func (node *Node) NewRPC(content string, target *address.Address) rpc.RPC {
 	return rpc.RPC{SenderId: node.ID, RPCId: kademliaid.NewRandomKademliaID(), Content: content, Target: target}
 }
 
-func (node *Node) NodeLookup(hash *kademliaid.KademliaID) []contact.Contact {
-	//TODO CREATE NODELOOKUP SO THAT It CAN find close NODES THAT ARE NOT IN TABLE
-	candidats := node.FindKClosest(hash, node.ID, 3)
+// https://kelseyc18.github.io/kademlia_vis/lookup/
+func (node *Node) FIND_NODE(LookingUp *kademliaid.KademliaID) {
+	//Round 1 contacts
+	Round1 := node.FindKClosest(LookingUp, node.ID, 1)
 
-	/*
-
-		for each node Send an RPC telling them to do a nodeLookup to
-			Each routine will check its address for TARGET(node,value,idk) locally
-				If TARGET found GG. Send an RPC call
-				Else Forward to its ALPHA NODES
-
-
-
-	*/
-
-	return candidats
-
-}
-
-// Finds data
-/*
-func (node *Node) FindData(hash *kademliaid.KademliaID) string {
-
-	data := ""
-	for {
-
+	for _, element := range Round1 {
+		// index is the index where we are
+		// element is the element from someSlice for where we are
+		rpc := node.NewRPC("FIND_NODE "+LookingUp.String(), element.Address)
+		node.Network.SendFindContactMessage(&rpc)
 	}
-
 }
-*/

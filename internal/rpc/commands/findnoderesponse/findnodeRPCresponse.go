@@ -27,7 +27,6 @@ func (Resp *FindNodeResponse) Execute(node *node.Node) {
 	test := *Resp.data
 
 	test2, err := contact.Deserialize(&test)
-	node.RoutingTable.AddContact()
 	fmt.Println(err)
 	fmt.Println("!!!!")
 	fmt.Println(test)
@@ -40,7 +39,7 @@ func (Resp *FindNodeResponse) ParseOptions(options *[]string) error {
 	if len(*options) == 0 {
 		return errors.New("Empty RESP")
 	}
-	data := strings.Join(*options, "")
+	data := strings.Join(*options, " ")
 	Resp.data = &data
 	return nil
 }

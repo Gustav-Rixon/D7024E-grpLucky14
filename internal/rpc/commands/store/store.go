@@ -3,6 +3,7 @@ package store
 import (
 	"errors"
 	"kademlia/internal/node"
+
 	"strings"
 
 	"github.com/rs/zerolog/log"

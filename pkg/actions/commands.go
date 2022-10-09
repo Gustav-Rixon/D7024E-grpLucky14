@@ -74,6 +74,22 @@ func Commands(msg *[]byte) {
 				return nil
 			},
 		},
+		{
+			Name:  "getid",
+			Usage: "get node ID",
+			Action: func(c *cli.Context) error {
+				sendMessage(msg)
+				return nil
+			},
+		},
+		{
+			Name:  "join",
+			Usage: "join",
+			Action: func(c *cli.Context) error {
+				sendMessage(msg)
+				return nil
+			},
+		},
 	}
 
 	err := app.Run(os.Args)

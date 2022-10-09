@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"kademlia/internal/contact"
 	"kademlia/internal/node"
+
 	"kademlia/internal/rpc"
-	"kademlia/internal/rpc/commands/findnode"
+	"kademlia/internal/rpc/commands/findnodeRPC"
 	"kademlia/internal/rpc/commands/findnoderesponse"
 	"kademlia/internal/rpc/commands/ping"
 	"kademlia/internal/rpc/commands/pong"
@@ -46,7 +47,7 @@ func ParseRPC(requestor *contact.Contact, rpc *rpc.RPC) (RPCCommand, error) {
 
 	case "FIND_NODE":
 		rpcLog.Msg("FIND_NODE received")
-		cmd = findnode.New(requestor, rpc.RPCId)
+		cmd = findnodeRPC.New(requestor, rpc.RPCId)
 
 	case "FIND_NODE_RESP":
 		rpcLog.Msg("FIND_NODE_RESP received")
