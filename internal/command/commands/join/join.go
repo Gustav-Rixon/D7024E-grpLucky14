@@ -1,30 +1,28 @@
 package join
 
 import (
-	"errors"
+	"kademlia/internal/address"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
-	"strings"
 
 	"github.com/rs/zerolog/log"
 )
 
 type Join struct {
-	LookingUp string
+	Target string
 }
 
-func (j *Join) Execute(node *node.Node) (string, error) {
+func (p *Join) Execute(node *node.Node) (string, error) {
 	log.Trace().Msg("Executing join command")
-	tt := kademliaid.FromString(j.LookingUp)
-	node.FIND_NODE(tt)
+	adr := address.New(p.Target)
+	node.Network.SendPingMessage(node.ID, adr)
+	//node.FIND_NODE(adr) //always ask route node when joining
+	node.FIND_NODE(kademliaid.FromString(p.Target))
 	return "Joined network on known node", nil
 }
 
-func (j *Join) ParseOptions(options []string) error {
-	if len(options) < 1 {
-		return errors.New("Missing target")
-	}
-	j.LookingUp = strings.Join(options[0:], " ")
+func (p *Join) ParseOptions(options []string) error {
+	p.Target = options[0]
 	return nil
 }
 

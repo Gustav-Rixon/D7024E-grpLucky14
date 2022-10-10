@@ -32,7 +32,7 @@ func waitForMessages(con *net.UDPConn, node *node.Node, rpcQ *rpcqueue.RPCQueue)
 	for {
 		//https://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
 		// I trust this post blindly
-		udpBuffer := make([]byte, 512)
+		udpBuffer := make([]byte, 512) //512
 		nr, addr, err := con.ReadFromUDP(udpBuffer)
 		if err != nil {
 			log.Warn().Str("Error", err.Error()).Msg("Failed to read from UDP")

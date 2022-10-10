@@ -24,7 +24,7 @@ func ClearSocket(socketAddress string) {
 }
 
 func respond(c net.Conn, node *node.Node) {
-	buf := make([]byte, 512)
+	buf := make([]byte, 512) //512
 	nr, err := c.Read(buf)
 	if err != nil {
 		return

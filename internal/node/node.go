@@ -1,6 +1,7 @@
 package node
 
 import (
+	"fmt"
 	"kademlia/internal/address"
 	"kademlia/internal/contact"
 	"kademlia/internal/datastore"
@@ -9,6 +10,7 @@ import (
 	"kademlia/internal/network/sender"
 	"kademlia/internal/routingtable"
 	"kademlia/internal/rpc"
+	"kademlia/internal/shortlist"
 	"os"
 	"strconv"
 	"strings"
@@ -22,6 +24,7 @@ type Node struct {
 	RoutingTable *routingtable.RoutingTable
 	DataStore    datastore.DataStore
 	Network      network.Network
+	Shortlist    *shortlist.Shortlist //??????
 	bootstrap    bool
 }
 
@@ -41,6 +44,7 @@ func (node *Node) Init(address *address.Address) {
 		DataStore:    datastore.New(),
 		RoutingTable: routingtable.NewRoutingTable(me),
 		Network:      network.Network{UdpSender: Sender},
+		Shortlist:    nil,
 		bootstrap:    false,
 	}
 }
@@ -113,13 +117,48 @@ func (node *Node) NewRPC(content string, target *address.Address) rpc.RPC {
 
 // https://kelseyc18.github.io/kademlia_vis/lookup/
 func (node *Node) FIND_NODE(LookingUp *kademliaid.KademliaID) {
-	//Round 1 contacts
-	Round1 := node.FindKClosest(LookingUp, node.ID, 1)
 
-	for _, element := range Round1 {
-		// index is the index where we are
-		// element is the element from someSlice for where we are
-		rpc := node.NewRPC("FIND_NODE "+LookingUp.String(), element.Address)
-		node.Network.SendFindContactMessage(&rpc)
+	node.Shortlist = shortlist.NewShortlist(LookingUp, node.FindKClosest(LookingUp, nil, 3)) //INIT shortlist fullösning
+
+	node.ProbeAlphaNodes(*node.Shortlist, 3)
+
+}
+
+// https://kelseyc18.github.io/kademlia_vis/lookup/
+func (node *Node) FIND_NODEOLD(LookingUp *kademliaid.KademliaID) []contact.Contact {
+
+	//Round 1 contacts
+	fmt.Println("@@@@")
+	fmt.Println(node.ID)
+	fmt.Println(LookingUp)
+	fmt.Println("@@@@")
+	Round1 := node.FindKClosest(node.ID, LookingUp, 5)
+	fmt.Println("!!Round1!!")
+	fmt.Println(Round1)
+	fmt.Println("!!Round1END!!")
+
+	node.Shortlist = shortlist.NewShortlist(LookingUp, Round1)
+
+	fmt.Println("!!shortlist!!")
+	fmt.Println(node.Shortlist)
+	fmt.Println("!!shortlistEND!!")
+
+	node.ProbeAlphaNodes(*node.Shortlist, 3)
+	return node.Shortlist.GetContacts()
+}
+
+func (node *Node) ProbeAlphaNodes(shortlist shortlist.Shortlist, alpha int) {
+
+	numProbed := 0
+	for i := 0; i < shortlist.Len() && numProbed < alpha; i++ {
+
+		if !shortlist.Entries[i].Probed {
+			log.Trace().Str("NodeID", shortlist.Entries[i].Contact.ID.String()).Msg("Probing node")
+			shortlist.Entries[i].Probed = true
+			rpc := node.NewRPC("FIND_NODE ", shortlist.Entries[i].Contact.Address)
+			numProbed++
+			node.Network.SendFindContactMessage(&rpc)
+		}
 	}
+	node.RoutingTable.AddContact(*node.Shortlist.Closest)
 }

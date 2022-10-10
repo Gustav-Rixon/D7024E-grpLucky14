@@ -2,7 +2,6 @@ package findnodeRPC
 
 import (
 	"errors"
-	"fmt"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
@@ -26,22 +25,7 @@ func (targetID *FindNodeRPC) Execute(node *node.Node) {
 	log.Trace().Msg("Executing FIND_NODE RPC")
 
 	// Responde with k clossets nodes
-	kClosest := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.requestor.ID, 1)
-
-	//FÖR felsökning av "Failed to deserialize string"
-
-	fmt.Println("&")
-	fmt.Println(*targetID.targetID)
-	fmt.Println("&")
-
-	fmt.Println("&&")
-	fmt.Println(kClosest)
-	fmt.Println("&&")
-
-	fmt.Println("&&&")
-	fmt.Println(&kClosest)
-	fmt.Println("&&&")
-
+	kClosest := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.requestor.ID, 3)
 	content := contact.SerializeContacts(kClosest)
 	node.Network.SendFindContactRespMessage(node.ID, targetID.requestor.Address, targetID.rpcId, &content)
 
