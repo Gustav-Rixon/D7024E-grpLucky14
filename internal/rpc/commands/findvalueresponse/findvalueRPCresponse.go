@@ -23,17 +23,19 @@ func New(senderId *kademliaid.KademliaID, rpcId *kademliaid.KademliaID) *FindVal
 func (Resp *FindValueResp) Execute(node *node.Node) {
 
 	response := &Resp.content
-	desResponse := DeserializeContacts(*response, node.ID)
 
-	fmt.Println("####")
-	fmt.Println(node.Shortlist.Entries)
-	fmt.Println("####")
+	if *response == "" {
+		desResponse := DeserializeContacts(*response, node.ID)
+		for _, element := range desResponse {
+			node.Shortlist.Add(element)
+		}
 
-	for _, element := range desResponse {
-		node.Shortlist.Add(element)
+		node.ProbeAlphaNodesForData(*node.Shortlist, 3)
 	}
 
-	node.ProbeAlphaNodesForData(*node.Shortlist, 3)
+	fmt.Println("####")
+	fmt.Println(*response)
+	fmt.Println("####")
 }
 
 func (findresp *FindValueResp) ParseOptions(options *[]string) error {

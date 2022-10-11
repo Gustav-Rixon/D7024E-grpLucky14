@@ -3,7 +3,6 @@ package get
 //TODO GET THE BREaD
 import (
 	"errors"
-	"fmt"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 
@@ -17,16 +16,12 @@ type Get struct {
 func (get *Get) Execute(node *node.Node) (string, error) {
 	log.Trace().Msg("Executing get command")
 	// Check local storage
-	value := node.DataStore.Get2(get.hash)
+	value := node.DataStore.Get(get.hash)
 	if value != "" {
 		value += ", from local node"
 	} else {
 		log.Debug().Str("Key", get.hash.String()).Msg("Value not found locally")
-		nodesWithData := node.FIND_DATA(&get.hash)
-
-		fmt.Println("!!!!!")
-		fmt.Println(nodesWithData)
-		fmt.Println("!!!!!")
+		node.FIND_DATA(&get.hash)
 
 	}
 	if value == "" {
