@@ -23,7 +23,7 @@ type Data struct {
 	Contacts *[]contact.Contact
 }
 
-const TTL time.Duration = 30 * time.Second
+const TTL time.Duration = 3000 * time.Second
 
 // Create the hash map
 func New() DataStore {

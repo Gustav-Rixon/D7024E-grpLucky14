@@ -9,6 +9,8 @@ import (
 	"kademlia/internal/rpc"
 	"kademlia/internal/rpc/commands/findnodeRPC"
 	"kademlia/internal/rpc/commands/findnoderesponse"
+	"kademlia/internal/rpc/commands/findvalueRPC"
+	findvalueresp "kademlia/internal/rpc/commands/findvalueresponse"
 	"kademlia/internal/rpc/commands/ping"
 	"kademlia/internal/rpc/commands/pong"
 	"kademlia/internal/rpc/commands/store"
@@ -52,6 +54,14 @@ func ParseRPC(requestor *contact.Contact, rpc *rpc.RPC) (RPCCommand, error) {
 	case "FIND_NODE_RESP":
 		rpcLog.Msg("FIND_NODE_RESP received")
 		cmd = findnoderesponse.New(rpc.RPCId)
+
+	case "FIND_VALUE":
+		rpcLog.Msg("FIND_VALUE received")
+		cmd = findvalueRPC.New(requestor, rpc.RPCId)
+
+	case "FIND_VALUE_RESP":
+		rpcLog.Msg("FIND_VALUE_RESP received")
+		cmd = findvalueresp.New(requestor.ID, rpc.RPCId)
 
 	default:
 		err = errors.New(fmt.Sprintf("Received unknown RPC %s", identifier))

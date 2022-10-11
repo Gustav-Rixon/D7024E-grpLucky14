@@ -17,19 +17,16 @@ type Get struct {
 func (get *Get) Execute(node *node.Node) (string, error) {
 	log.Trace().Msg("Executing get command")
 	// Check local storage
-	value := node.DataStore.Get(get.hash)
-	fmt.Println(value)
-	key := kademliaid.NewKademliaID(&value)
+	value := node.DataStore.Get2(get.hash)
 	if value != "" {
 		value += ", from local node"
 	} else {
+		log.Debug().Str("Key", get.hash.String()).Msg("Value not found locally")
+		nodesWithData := node.FIND_DATA(&get.hash)
 
-		// GOGOG RPC FIND_VALUE
-		//RPC DID NOT FIND
-		//RPC FOUND
-		closestNodes := node.FindKClosest(&key, nil, 3)
-		targetNode := closestNodes[0]
-		value += ", from " + targetNode.String()
+		fmt.Println("!!!!!")
+		fmt.Println(nodesWithData)
+		fmt.Println("!!!!!")
 
 	}
 	if value == "" {

@@ -38,8 +38,8 @@ func (Resp *FindNodeResponse) Execute(node *node.Node) {
 	}
 
 	fmt.Println("@@@2")
-	fmt.Println(node.Shortlist.Entries[0].Probed)
-	fmt.Println(node.Shortlist.Entries[1].Probed)
+	//fmt.Println(node.Shortlist.Entries[0].Probed)
+	//fmt.Println(node.Shortlist.Entries[1].Probed)
 	fmt.Println("@@@2")
 
 	node.ProbeAlphaNodes(*node.Shortlist, 3)
@@ -57,34 +57,6 @@ func (Resp *FindNodeResponse) Execute(node *node.Node) {
 	//fmt.Println(node.Shortlist)
 	//fmt.Println(node.Shortlist.Entries)
 	//fmt.Println("@@@")
-}
-
-// Will insert values to routing table THIS IS FOR TESTING
-func (Resp *FindNodeResponse) ExecuteOLD(node *node.Node) {
-	log.Trace().Msg("Executing FIND_NODE_RESP RPC")
-
-	//Just add contacts to its shortlist?
-	//response := *Resp.data
-	//desResponse := DeserializeContacts(response, node.Shortlist.Target)
-
-	//Insert all contacts to shortlist
-	//for _, element := range desResponse {
-	//	node.Shortlist.Add(element)
-	//}
-
-	fmt.Println("@@@")
-	//fmt.Println(node.Shortlist)
-	//fmt.Println(node.Shortlist.Entries)
-	fmt.Println("@@@")
-
-	fmt.Println("@@@@")
-	fmt.Println(node.ID)
-	//closest := node.Shortlist.Closest
-	fmt.Println("@@@@")
-
-	//node.RoutingTable.AddContact(*closest)
-	//node.ProbeAlphaNodes(*node.Shortlist, 3)
-
 }
 
 func (Resp *FindNodeResponse) ParseOptions(options *[]string) error {

@@ -19,7 +19,9 @@ func (put *Put) Execute(node *node.Node) (string, error) {
 	log.Trace().Msg("Executing put command")
 
 	key := kademliaid.NewKademliaID(&put.fileContent)
-	closestNodes := node.FindKClosest(&key, nil, k)
+
+	closestNodes := node.FIND_NODE(&key)
+
 	node.Store(&put.fileContent, &closestNodes)
 
 	for _, closeNode := range closestNodes {

@@ -4,6 +4,7 @@ import (
 	"kademlia/internal/address"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
+	"time"
 
 	"github.com/rs/zerolog/log"
 )
@@ -16,6 +17,7 @@ func (p *Join) Execute(node *node.Node) (string, error) {
 	log.Trace().Msg("Executing join command")
 	adr := address.New(p.Target)
 	node.Network.SendPingMessage(node.ID, adr)
+	time.Sleep(500 * time.Millisecond)
 	//node.FIND_NODE(adr) //always ask route node when joining
 	node.FIND_NODE(kademliaid.FromString(p.Target))
 	return "Joined network on known node", nil
