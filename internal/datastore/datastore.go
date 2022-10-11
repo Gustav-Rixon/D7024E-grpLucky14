@@ -73,9 +73,10 @@ func (datastorage *DataStore) GetValue(key kademliaid.KademliaID) string {
 	datastorage.lock.Lock()
 	defer datastorage.lock.Unlock()
 	data := datastorage.store[key]
-	expiry := time.Now().Add(TTL)
-	data.expiry = &expiry
+
 	if data != nil {
+		expiry := time.Now().Add(TTL)
+		data.expiry = &expiry
 		return data.value
 
 	}
@@ -88,11 +89,11 @@ func (datastorage *DataStore) Get(key kademliaid.KademliaID) string {
 	datastorage.lock.Lock()
 	defer datastorage.lock.Unlock()
 	data := datastorage.store[key]
-	expiry := time.Now().Add(TTL)
-	data.expiry = &expiry
-	if data != nil {
-		return data.value
 
+	if data != nil {
+		expiry := time.Now().Add(TTL)
+		data.expiry = &expiry
+		return data.value
 	}
 	return ""
 
