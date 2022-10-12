@@ -81,10 +81,11 @@ func Bootstrap(addr *address.Address, lport int, ip string) {
 		listener.Listen(ip, lport, &node, &rpcQ)
 	}
 
-	if getHostIP() == "172.18.0.3" { //For testing join
+	if getHostIP() != "172.18.0.3" { //For testing join
 		node.Init(addr) //TODO JOIN SUPERNODE
 		fmt.Println(node.ID)
 		//fmt.Println(node.RoutingTable.GetContacts()) // REMOVE LATER TESTING NSLOOKUP
+		//REMOVE LATTER TESTING NODELOKKUP
 		go cmdlistener.Listen(&node)
 		go restAPI.Listen(&node)
 		listener.Listen(ip, lport, &node, &rpcQ) // THE POINT OF NO RETURN

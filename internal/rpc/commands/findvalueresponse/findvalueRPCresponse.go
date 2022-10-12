@@ -2,7 +2,6 @@ package findvalueresp
 
 import (
 	"errors"
-	"fmt"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
@@ -24,7 +23,15 @@ func (Resp *FindValueResp) Execute(node *node.Node) {
 
 	response := &Resp.content
 
-	if *response == "" {
+	awnser := strings.Split(Resp.content, "=")
+
+	if awnser[0] == "VALUE" {
+		//log.Debug().Str("Value", value).Str("Hash", *find.hash).Msg("Key Found")
+		println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+		println("@@@@@@@@@@@@@@@@@@@@@@@@@@@FOUND@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+		println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
+	} else {
 		desResponse := DeserializeContacts(*response, node.ID)
 		for _, element := range desResponse {
 			node.Shortlist.Add(element)
@@ -32,10 +39,6 @@ func (Resp *FindValueResp) Execute(node *node.Node) {
 
 		node.ProbeAlphaNodesForData(*node.Shortlist, 3)
 	}
-
-	fmt.Println("####")
-	fmt.Println(*response)
-	fmt.Println("####")
 }
 
 func (findresp *FindValueResp) ParseOptions(options *[]string) error {
