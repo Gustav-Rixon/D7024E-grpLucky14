@@ -22,7 +22,6 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 	} else {
 		log.Debug().Str("Key", get.hash.String()).Msg("Value not found locally")
 		node.FIND_DATA(&get.hash)
-
 	}
 	if value == "" {
 		return "", errors.New("Key not found")

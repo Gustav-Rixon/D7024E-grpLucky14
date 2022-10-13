@@ -37,11 +37,6 @@ func (Resp *FindNodeResponse) Execute(node *node.Node) {
 		node.Shortlist.Add(element)
 	}
 
-	fmt.Println("@@@2")
-	//fmt.Println(node.Shortlist.Entries[0].Probed)
-	//fmt.Println(node.Shortlist.Entries[1].Probed)
-	fmt.Println("@@@2")
-
 	node.ProbeAlphaNodes(*node.Shortlist, 3)
 
 	//node.Shortlist = shortlist.NewShortlist(node.ID, desResponse)
