@@ -92,7 +92,7 @@ func (network *Network) SendRefreshMessage(rpc *rpc.RPC) {
 	err := rpc.Send(network.UdpSender, rpc.Target)
 
 	if err != nil {
-		log.Error().Msgf("Failed to write RPC STORE message to UDP: %s", err.Error())
+		log.Error().Msgf("Failed to write RPC REFRESH message to UDP: %s", err.Error())
 	}
-	log.Debug().Str("Target", rpc.Target.String()).Msg("Sent STORE RPC to target")
+	log.Debug().Str("Target", rpc.Target.String()).Msg("Sent REFRESH RPC to target")
 }

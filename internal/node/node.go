@@ -14,6 +14,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/rs/zerolog/log"
 )
@@ -76,9 +77,30 @@ func (node *Node) AddRout(address *address.Address) {
 	node.RoutingTable.AddContact(me)
 }
 
+// Stores values in datastore, continually sends RefreshRPCs to other nodes with the same data on them as to not let it expire
 func (node *Node) Store(value *string, contacts *[]contact.Contact) {
 	log.Trace().Str("Value", *value).Msg("Storing value")
 	node.DataStore.Insert(*value, contacts, node.Network.UdpSender)
+
+	if contacts != nil {
+		key := kademliaid.NewKademliaID(value)
+		go func() {
+			for {
+				time.Sleep(datastore.TTL / 2)
+
+				if node.DataStore.Refresh(key) == "" {
+					break
+				}
+
+				for _, closeNode := range *contacts {
+					rpc := node.NewRPC("REFRESH "+key.String(), closeNode.Address)
+					node.Network.SendRefreshMessage(&rpc)
+				}
+
+			}
+		}()
+	}
+
 }
 
 func (node *Node) Refresh(key *string) {
