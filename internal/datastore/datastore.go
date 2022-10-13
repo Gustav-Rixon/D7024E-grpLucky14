@@ -98,3 +98,17 @@ func (datastorage *DataStore) Get(key kademliaid.KademliaID) string {
 	return ""
 
 }
+
+func (datastorage *DataStore) Refresh(key kademliaid.KademliaID) string {
+	datastorage.lock.Lock()
+	defer datastorage.lock.Unlock()
+
+	data := datastorage.store[key]
+
+	if data != nil {
+		expiry := time.Now().Add(TTL)
+		data.expiry = &expiry
+		return "cool"
+	}
+	return ""
+}

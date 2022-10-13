@@ -81,6 +81,11 @@ func (node *Node) Store(value *string, contacts *[]contact.Contact) {
 	node.DataStore.Insert(*value, contacts, node.Network.UdpSender)
 }
 
+func (node *Node) Refresh(key *string) {
+	log.Trace().Str("Key", *key).Msg("Refreshing")
+	//node.DataStore.Refresh(key)
+}
+
 func GetEnvIntVariable(variable string, defaultValue int) int {
 	val, err := strconv.Atoi(os.Getenv(variable))
 	if err != nil {

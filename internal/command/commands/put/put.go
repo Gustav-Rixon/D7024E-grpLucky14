@@ -27,6 +27,8 @@ func (put *Put) Execute(node *node.Node) (string, error) {
 	for _, closeNode := range closestNodes {
 		node.Network.SendStoreMessage(node.ID, closeNode.Address, []byte(put.fileContent))
 	}
+	rpc := node.NewRPC("REFRESH"+key.String(), closestNodes[0].Address)
+	node.Network.SendRefreshMessage(&rpc)
 
 	return key.String(), nil
 }
