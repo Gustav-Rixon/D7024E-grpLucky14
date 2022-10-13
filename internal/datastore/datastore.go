@@ -23,7 +23,7 @@ type Data struct {
 	Contacts *[]contact.Contact
 }
 
-const TTL time.Duration = 3000 * time.Second
+const TTL time.Duration = 30 * time.Second
 
 // Create the hash map
 func New() DataStore {
@@ -97,4 +97,18 @@ func (datastorage *DataStore) Get(key kademliaid.KademliaID) string {
 	}
 	return ""
 
+}
+
+func (datastorage *DataStore) Refresh(key kademliaid.KademliaID) string {
+	datastorage.lock.Lock()
+	defer datastorage.lock.Unlock()
+
+	data := datastorage.store[key]
+
+	if data != nil {
+		expiry := time.Now().Add(TTL)
+		data.expiry = &expiry
+		return "cool"
+	}
+	return ""
 }
