@@ -15,7 +15,7 @@ services:
       dockerfile: Dockerfile
     deploy:
       mode: replicated
-      replicas: 10
+      replicas: 50
       #        resources:
       #           limits:
       #              cpus: "0.1"
@@ -33,7 +33,6 @@ services:
       - ALPHA=3
       - LISTEN_PORT=8888
       - SEND_PORT=8881
-      - WAIT_FOR_RESPONSE_TIME=5
 
 networks:
   kademlia_network:

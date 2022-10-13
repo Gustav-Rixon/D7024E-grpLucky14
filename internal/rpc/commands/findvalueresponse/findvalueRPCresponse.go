@@ -2,11 +2,16 @@ package findvalueresp
 
 import (
 	"errors"
+	"fmt"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
+	"os"
+	"strconv"
 
 	"strings"
+
+	"github.com/rs/zerolog/log"
 )
 
 type FindValueResp struct {
@@ -22,14 +27,16 @@ func New(senderId *kademliaid.KademliaID, rpcId *kademliaid.KademliaID) *FindVal
 func (Resp *FindValueResp) Execute(node *node.Node) {
 
 	response := &Resp.content
-
 	awnser := strings.Split(Resp.content, "=")
 
+	ALPHA, err := strconv.Atoi(os.Getenv("ALPHA"))
+	if err != nil {
+		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+	}
+
 	if awnser[0] == "VALUE" {
-		//log.Debug().Str("Value", value).Str("Hash", *find.hash).Msg("Key Found")
-		println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-		println("@@@@@@@@@@@@@@@@@@@@@@@@@@@FOUND@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-		println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+		log.Debug().Str("Key found", awnser[1])
+		node.Shortlist.AddFoundData(Resp.senderId, awnser[1])
 
 	} else {
 		desResponse := DeserializeContacts(*response, node.ID)
@@ -37,7 +44,11 @@ func (Resp *FindValueResp) Execute(node *node.Node) {
 			node.Shortlist.Add(element)
 		}
 
-		node.ProbeAlphaNodesForData(*node.Shortlist, 3)
+		node.ProbeAlpha(*node.Shortlist, ALPHA, fmt.Sprintf("%s %s", "FIND_NODE", node.Shortlist.Target))
+
+		fmt.Println("@@@")
+		fmt.Println(node.Shortlist)
+		fmt.Println("@@@")
 	}
 }
 

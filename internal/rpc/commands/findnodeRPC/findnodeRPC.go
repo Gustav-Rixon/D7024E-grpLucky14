@@ -5,6 +5,8 @@ import (
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
+	"os"
+	"strconv"
 
 	"github.com/rs/zerolog/log"
 )
@@ -24,8 +26,13 @@ func New(requestor *contact.Contact, rpcId *kademliaid.KademliaID) *FindNodeRPC 
 func (targetID *FindNodeRPC) Execute(node *node.Node) {
 	log.Trace().Msg("Executing FIND_NODE RPC")
 
+	K, err := strconv.Atoi(os.Getenv("K"))
+	if err != nil {
+		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+	}
+
 	// Responde with k clossets nodes
-	kClosest := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.requestor.ID, 3)
+	kClosest := node.FindKClosest(kademliaid.FromString(*targetID.targetID), targetID.requestor.ID, K)
 	content := contact.SerializeContacts(kClosest)
 	node.Network.SendFindContactRespMessage(node.ID, targetID.requestor.Address, targetID.rpcId, &content)
 

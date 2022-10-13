@@ -3,8 +3,10 @@ package get
 //TODO GET THE BREaD
 import (
 	"errors"
+	"fmt"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
+	"time"
 
 	"github.com/rs/zerolog/log"
 )
@@ -21,7 +23,28 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 		value += ", from local node"
 	} else {
 		log.Debug().Str("Key", get.hash.String()).Msg("Value not found locally")
-		node.FIND_DATA(&get.hash)
+		value = node.FIND_DATA(&get.hash)
+		timeStamp := time.Now()
+
+		for node.Shortlist.GetData() == "" {
+			time.Sleep(1 * time.Millisecond)
+			if time.Since(timeStamp) > (5 * time.Second) { //WORST CASE
+				break
+			}
+		}
+
+		//fmt.Println("@@@@@@@test@@@@@@@")
+		//fmt.Println(t)
+		//fmt.Println("@@@@@@@test@@@@@@@")
+
+		//value = node.Shortlist.GetData() + " from "
+		value = node.Shortlist.GetData()
+
+		fmt.Println("@@@@@CLOSETS TARGET INFO@@@@@")
+		fmt.Println(node.Shortlist.Entries[0].Contact.Address)
+		fmt.Println(node.Shortlist.Entries[0].Probed)
+		fmt.Println("@@@@@CLOSETS TARGET INFO@@@@@")
+
 	}
 	if value == "" {
 		return "", errors.New("Key not found")

@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-const k = 5 // k-closest
+const k = 4 // k-closest
 
 type Entry struct {
 	Contact       contact.Contact
@@ -16,9 +16,28 @@ type Entry struct {
 }
 
 type Shortlist struct {
-	Entries [k]*Entry
-	Closest *contact.Contact
-	Target  *kademliaid.KademliaID
+	Entries  [k]*Entry
+	Closest  *contact.Contact
+	Target   *kademliaid.KademliaID
+	dataHost *kademliaid.KademliaID
+	data     string
+}
+
+// This solution suks probebly
+func (sl *Shortlist) AddFoundData(host *kademliaid.KademliaID, data string) {
+	sl.dataHost = host
+	sl.data = data
+}
+
+// This solution suks probebly
+func (sl *Shortlist) GetData() string {
+
+	return sl.data
+}
+
+// This solution suks probebly
+func (sl *Shortlist) GetDataHost() *kademliaid.KademliaID {
+	return sl.dataHost
 }
 
 func (sl *Shortlist) Swap(i, j int) {
