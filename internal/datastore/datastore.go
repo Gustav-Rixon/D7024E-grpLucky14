@@ -23,6 +23,7 @@ type Data struct {
 	Contacts *[]contact.Contact
 }
 
+// TTL functionality inspired by: https://github.com/Konstantin8105/SimpleTTL/blob/master/simplettl.go
 const TTL time.Duration = 30 * time.Second
 
 // Create the hash map
