@@ -111,13 +111,3 @@ func (sl *Shortlist) Add(c *contact.Contact) {
 	sort.Sort(sl)
 	sl.Closest = &sl.Entries[0].Contact
 }
-
-func (sl *Shortlist) Drop(c *contact.Contact) {
-	for i := 0; i < len(sl.Entries); i++ {
-		if sl.Entries[i] != nil {
-			if sl.Entries[i].Contact.ID.Equals(c.ID) {
-				sl.Entries[i] = nil
-			}
-		}
-	}
-}

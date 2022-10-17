@@ -27,7 +27,7 @@ func (find *FindValueRPC) Execute(node *node.Node) {
 
 	key := kademliaid.FromString(*find.hash)
 
-	if value := node.DataStore.Get(*key); value != "" {
+	if value := node.DataStore.GetValue(*key); value != "" {
 
 		fmt.Println("@@@@@@@@@Key Found@@@@@@@@@@@")
 		fmt.Println(fmt.Sprintf("Found at node: %s", node.ID))

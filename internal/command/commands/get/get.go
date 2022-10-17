@@ -18,7 +18,7 @@ type Get struct {
 func (get *Get) Execute(node *node.Node) (string, error) {
 	log.Trace().Msg("Executing get command")
 	// Check local storage
-	value := node.DataStore.Get(get.hash)
+	value := node.DataStore.GetValue(get.hash)
 	if value != "" {
 		value += ", from local node"
 	} else {
