@@ -23,7 +23,7 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 		value += ", from local node"
 	} else {
 		log.Debug().Str("Key", get.hash.String()).Msg("Value not found locally")
-		value = node.FIND_DATA(&get.hash)
+		node.FIND_DATA(&get.hash)
 		timeStamp := time.Now()
 
 		for node.Shortlist.GetData() == "" {
@@ -43,11 +43,29 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 		fmt.Println("@@@@@CLOSETS TARGET INFO@@@@@")
 		fmt.Println(node.Shortlist.Entries[0].Contact.Address)
 		fmt.Println(node.Shortlist.Entries[0].Probed)
+
 		fmt.Println("@@@@@CLOSETS TARGET INFO@@@@@")
 
 	}
 	if value == "" {
-		return "", errors.New("Key not found")
+		node.FIND_DATA(&get.hash)
+		timeStamp := time.Now()
+
+		for node.Shortlist.GetData() == "" {
+			time.Sleep(1 * time.Millisecond)
+			if time.Since(timeStamp) > (5 * time.Second) { //WORST CASE
+				break
+			}
+		}
+
+		value = node.Shortlist.GetData()
+
+		if value != "" {
+			return value, nil
+		} else {
+			return "", errors.New("Key not found")
+		}
+
 	}
 	return value, nil
 }

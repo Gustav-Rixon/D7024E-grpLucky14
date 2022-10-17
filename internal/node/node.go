@@ -180,7 +180,7 @@ func (node *Node) FIND_NODE(LookingUp *kademliaid.KademliaID) []contact.Contact 
 
 }
 
-func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) string {
+func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) {
 
 	K, err := strconv.Atoi(os.Getenv("K"))
 	if err != nil {
@@ -194,8 +194,6 @@ func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) string {
 
 	node.Shortlist = shortlist.NewShortlist(hash, node.FindKClosest(node.ID, hash, K)) //INIT shortlist fullösning
 
-	result := ""
-
 	for {
 		closestSoFar := node.Shortlist.Closest
 		probed := node.ProbeAlpha(*node.Shortlist, ALPHA, fmt.Sprintf("%s %s", fmt.Sprintf("FIND_VALUE %s", hash.String())))
@@ -205,10 +203,6 @@ func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) string {
 			break
 		}
 
-		if result != "" {
-			return result
-		}
-
 		if node.Shortlist.Closest == closestSoFar {
 			log.Trace().Msg("Closest node not updated")
 			node.ProbeAlpha(*node.Shortlist, ALPHA, fmt.Sprintf("%s %s", fmt.Sprintf("FIND_VALUE %s", hash.String())))
@@ -216,18 +210,6 @@ func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) string {
 		}
 
 	}
-
-	s := "Value not found, k closest contacts: ["
-	for i, entry := range node.Shortlist.Entries {
-		if entry != nil {
-			s += entry.Contact.String()
-			if i < len(node.Shortlist.Entries)-1 {
-				s += ", "
-			}
-		}
-	}
-	s += "]"
-	return s
 
 }
 
@@ -245,5 +227,6 @@ func (node *Node) ProbeAlpha(shortlist shortlist.Shortlist, alpha int, content s
 			node.Network.SendFindContactMessage(&rpc)
 		}
 	}
+
 	return numProbed
 }
