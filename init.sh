@@ -1,4 +1,3 @@
-
 CONT_NAME="d7024e-grplucky14-kademlia-" # Common part of container names
 
 echo "Initilizing all running Kademlia containers..."
@@ -20,11 +19,9 @@ done
 known_node_cid="$(echo "$cont_ids" | head -n 1)"
 i=0
 for id in $cont_ids; do
-    if [ "$id" != "$known_node_cid" ]; then
-        docker exec -ti $id cli join ${arrIp[i]}
-        #echo $id "joining on" ${arrIp[i]}
-        ((i++))
-    fi
+  docker exec -ti $id cli join ${arrIp[0]}
+  #echo $id "joining on" ${arrIp[i]}
+  ((i++))
 done
 
 echo "Done"
