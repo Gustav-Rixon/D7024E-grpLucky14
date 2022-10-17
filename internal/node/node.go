@@ -196,7 +196,7 @@ func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) {
 
 	for {
 		closestSoFar := node.Shortlist.Closest
-		probed := node.ProbeAlpha(*node.Shortlist, ALPHA, fmt.Sprintf("%s %s", fmt.Sprintf("FIND_VALUE %s", hash.String())))
+		probed := node.ProbeAlpha(*node.Shortlist, ALPHA, fmt.Sprintf("%s ", fmt.Sprintf("FIND_VALUE %s", hash.String())))
 
 		if probed == 0 {
 			log.Trace().Msg("FIND_VALUE lookup became stale")
@@ -205,7 +205,7 @@ func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) {
 
 		if node.Shortlist.Closest == closestSoFar {
 			log.Trace().Msg("Closest node not updated")
-			node.ProbeAlpha(*node.Shortlist, ALPHA, fmt.Sprintf("%s %s", fmt.Sprintf("FIND_VALUE %s", hash.String())))
+			node.ProbeAlpha(*node.Shortlist, ALPHA, fmt.Sprintf("%s ", fmt.Sprintf("FIND_VALUE %s", hash.String())))
 			break
 		}
 
