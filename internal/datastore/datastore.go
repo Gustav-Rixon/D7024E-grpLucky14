@@ -116,6 +116,17 @@ func (datastorage *DataStore) Refresh(key kademliaid.KademliaID) string {
 	return ""
 }
 
+func (datastorage *DataStore) GetForget(key kademliaid.KademliaID) bool {
+	datastorage.lock.Lock()
+	defer datastorage.lock.Unlock()
+
+	data := datastorage.store[key]
+	if data != nil {
+		return data.forget
+	}
+	return true
+}
+
 func (datastorage *DataStore) SetForget(key kademliaid.KademliaID, forg bool) string {
 	datastorage.lock.Lock()
 	defer datastorage.lock.Unlock()

@@ -88,10 +88,13 @@ func (node *Node) Store(value *string, contacts *[]contact.Contact) {
 		go func() {
 			for {
 				time.Sleep(datastore.TTL / 2)
-				data := node.DataStore.Get(key)
-				if data.forget == true {
+
+				if node.DataStore.GetForget(key) {
+					fmt.Println("Object will no longer be refreshed")
 					break
 				}
+
+				node.DataStore.Refresh(key)
 
 				for _, closeNode := range *contacts {
 					rpc := node.NewRPC("REFRESH "+key.String(), closeNode.Address)
