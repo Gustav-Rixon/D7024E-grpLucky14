@@ -5,6 +5,7 @@ import (
 
 	"kademlia/internal/command/commands/add"
 	"kademlia/internal/command/commands/findnode"
+	"kademlia/internal/command/commands/forget"
 	"kademlia/internal/command/commands/get"
 	"kademlia/internal/command/commands/getTable"
 	"kademlia/internal/command/commands/getid"
@@ -54,8 +55,12 @@ func ParseCmd(s string) Command {
 
 	case "getid":
 		command = new(getid.GetId)
+
 	case "join":
 		command = new(join.Join)
+
+	case "forget":
+		command = new(forget.Forget)
 
 	//case "findValue":
 	//	command = new()

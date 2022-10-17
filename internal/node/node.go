@@ -80,17 +80,21 @@ func (node *Node) AddRout(address *address.Address) {
 // Stores values in datastore, continually sends RefreshRPCs to other nodes with the same data on them as to not let it expire
 func (node *Node) Store(value *string, contacts *[]contact.Contact) {
 	log.Trace().Str("Value", *value).Msg("Storing value")
-	node.DataStore.Insert(*value, contacts, node.Network.UdpSender)
+	node.DataStore.Insert(*value, contacts, node.Network.UdpSender, true)
 
 	if contacts != nil {
 		key := kademliaid.NewKademliaID(value)
+		node.DataStore.SetForget(key, false)
 		go func() {
 			for {
 				time.Sleep(datastore.TTL / 2)
 
-				if node.DataStore.Refresh(key) == "" {
+				if node.DataStore.GetForget(key) {
+					fmt.Println("Object will no longer be refreshed")
 					break
 				}
+
+				node.DataStore.Refresh(key)
 
 				for _, closeNode := range *contacts {
 					rpc := node.NewRPC("REFRESH "+key.String(), closeNode.Address)

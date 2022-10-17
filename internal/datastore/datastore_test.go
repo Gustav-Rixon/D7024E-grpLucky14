@@ -22,7 +22,7 @@ func TestGetValue(t *testing.T) {
 	d = datastore.New()
 	value := "hello"
 	contacts := &[]contact.Contact{}
-	d.Insert(value, contacts, nil)
+	d.Insert(value, contacts, nil, true)
 	assert.Equal(t, d.GetValue(kademliaid.NewKademliaID(&value)), "hello")
 
 	// Should not be able to get non-existent key
@@ -39,7 +39,7 @@ func TestInsert(t *testing.T) {
 	//should be able to insert
 	d = datastore.New()
 	contacts = &[]contact.Contact{}
-	d.Insert(value, contacts, nil)
+	d.Insert(value, contacts, nil, true)
 	assert.Equal(t, d.GetValue(kademliaid.NewKademliaID(&value)), "hello")
 
 }

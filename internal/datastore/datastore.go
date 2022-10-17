@@ -21,6 +21,7 @@ type Data struct {
 	expiry   *time.Time
 	value    string
 	Contacts *[]contact.Contact
+	forget   bool
 }
 
 // TTL functionality inspired by: https://github.com/Konstantin8105/SimpleTTL/blob/master/simplettl.go
@@ -56,7 +57,7 @@ func New() DataStore {
 }
 
 // Insert a data into the store.
-func (datastorage *DataStore) Insert(value string, contacts *[]contact.Contact, sender rpc.Sender) {
+func (datastorage *DataStore) Insert(value string, contacts *[]contact.Contact, sender rpc.Sender, forg bool) {
 	datastorage.lock.Lock()
 	defer datastorage.lock.Unlock()
 	id := kademliaid.NewKademliaID(&value)
@@ -65,6 +66,7 @@ func (datastorage *DataStore) Insert(value string, contacts *[]contact.Contact, 
 	data.Contacts = contacts
 	expiry := time.Now().Add(TTL)
 	data.expiry = &expiry
+	data.forget = forg
 	datastorage.store[id] = &data
 }
 
@@ -109,6 +111,29 @@ func (datastorage *DataStore) Refresh(key kademliaid.KademliaID) string {
 	if data != nil {
 		expiry := time.Now().Add(TTL)
 		data.expiry = &expiry
+		return "cool"
+	}
+	return ""
+}
+
+func (datastorage *DataStore) GetForget(key kademliaid.KademliaID) bool {
+	datastorage.lock.Lock()
+	defer datastorage.lock.Unlock()
+
+	data := datastorage.store[key]
+	if data != nil {
+		return data.forget
+	}
+	return true
+}
+
+func (datastorage *DataStore) SetForget(key kademliaid.KademliaID, forg bool) string {
+	datastorage.lock.Lock()
+	defer datastorage.lock.Unlock()
+
+	data := datastorage.store[key]
+	if data != nil {
+		data.forget = forg
 		return "cool"
 	}
 	return ""

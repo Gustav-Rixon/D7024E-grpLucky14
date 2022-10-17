@@ -53,7 +53,7 @@ func TestGet(t *testing.T) {
 	hash := kademliaid.NewKademliaID(&msg)
 	req, _ = http.NewRequest("POST", "/objects/"+hash.String(), nil)
 	contacts := &[]contact.Contact{}
-	n.DataStore.Insert(msg, contacts, nil)
+	n.DataStore.Insert(msg, contacts, nil, true)
 	handler = restAPI.RPCHandler{Node: &n}
 	handler.Get(writerMock, req)
 	writerMock.AssertCalled(t, "Write", []byte(msg+", from local node"))

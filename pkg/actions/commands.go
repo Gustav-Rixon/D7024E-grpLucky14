@@ -90,6 +90,14 @@ func Commands(msg *[]byte) {
 				return nil
 			},
 		},
+		{
+			Name:  "forget",
+			Usage: "forgets object with key",
+			Action: func(c *cli.Context) error {
+				sendMessage(msg)
+				return nil
+			},
+		},
 	}
 
 	err := app.Run(os.Args)
