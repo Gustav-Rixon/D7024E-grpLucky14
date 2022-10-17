@@ -41,10 +41,11 @@ func TestGetContactAndCalcDistance(t *testing.T) {
 func TestGetContactAndCalcDistanceNoRequestor(t *testing.T) {
 	b := bucket.NewBucket()
 	key := kademliaid.NewRandomKademliaID()
+	key3 := kademliaid.NewRandomKademliaID()
 	inAddr := "127.0.0.1:8888"
 	adr := address.New(inAddr)
 	b.AddContact(contact.NewContact(key, adr))
 	key2 := kademliaid.NewRandomKademliaID()
-	c := b.GetContactAndCalcDistanceNoRequestor(key2, key)
+	c := b.GetContactAndCalcDistanceNoRequestor(key2, key3)
 	assert.NotNil(t, c)
 }
