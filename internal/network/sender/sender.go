@@ -1,7 +1,6 @@
 package sender
 
 import (
-	"fmt"
 	"kademlia/internal/address"
 	"net"
 	"os"
@@ -28,8 +27,6 @@ func (udp *Sender) Send(data string, target *address.Address) error {
 	if err != nil {
 		return err
 	}
-	var n int
-	n, err = udp.connection.WriteTo([]byte(data), address)
-	fmt.Println(n)
+	_, err = udp.connection.WriteTo([]byte(data), address)
 	return err
 }
