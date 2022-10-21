@@ -13,7 +13,6 @@ import (
 	"kademlia/internal/shortlist"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -70,13 +69,6 @@ func (node *Node) InitBOOT(address *address.Address) {
 	}
 }
 
-func (node *Node) AddRout(address *address.Address) {
-	skitt := "0000000000000000000000000000000000000000"
-	id := kademliaid.NewKademliaID(&skitt)
-	me := contact.NewContact(&id, address)
-	node.RoutingTable.AddContact(me)
-}
-
 // Stores values in datastore, continually sends RefreshRPCs to other nodes with the same data on them as to not let it expire
 func (node *Node) Store(value *string, contacts *[]contact.Contact) {
 	log.Trace().Str("Value", *value).Msg("Storing value")
@@ -107,34 +99,6 @@ func (node *Node) Store(value *string, contacts *[]contact.Contact) {
 
 }
 
-func (node *Node) Refresh(key *string) {
-	log.Trace().Str("Key", *key).Msg("Refreshing")
-	//node.DataStore.Refresh(key)
-}
-
-func GetEnvIntVariable(variable string, defaultValue int) int {
-	val, err := strconv.Atoi(os.Getenv(variable))
-	if err != nil {
-		log.Error().Msgf("Failed to convert env variable %s from string to int: %s", variable, err)
-		return defaultValue
-	}
-	return val
-}
-
-func DeserializeContacts(data string, targetId *kademliaid.KademliaID) []*contact.Contact {
-	contacts := []*contact.Contact{}
-	for _, sContact := range strings.Split(data, " ") {
-		if sContact != "" {
-			err, c := contact.Deserialize(&sContact)
-			if err == nil {
-				c.CalcDistance(targetId)
-				contacts = append(contacts, c)
-			}
-		}
-	}
-	return contacts
-}
-
 // FindKClosest returns a list of candidates containing the k closest nodes
 // to the key being searched for (from the nodes own bucket(s))
 func (node *Node) FindKClosest(key *kademliaid.KademliaID, requestorID *kademliaid.KademliaID, k int) []contact.Contact {
@@ -151,7 +115,8 @@ func (node *Node) FIND_NODE(LookingUp *kademliaid.KademliaID) []contact.Contact 
 
 	K, err := strconv.Atoi(os.Getenv("K"))
 	if err != nil {
-		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+		log.Error().Msgf("Failed to convert env variable K from string to int: %s", err)
+		K = 4
 	}
 
 	node.Shortlist = shortlist.NewShortlist(LookingUp, node.FindKClosest(node.ID, LookingUp, K)) //INIT shortlist fullösning
@@ -185,11 +150,13 @@ func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) {
 	K, err := strconv.Atoi(os.Getenv("K"))
 	if err != nil {
 		log.Error().Msgf("Failed to convert env variable K from string to int: %s", err)
+		K = 4
 	}
 
 	ALPHA, err := strconv.Atoi(os.Getenv("ALPHA"))
 	if err != nil {
 		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+		ALPHA = 3
 	}
 
 	node.Shortlist = shortlist.NewShortlist(hash, node.FindKClosest(node.ID, hash, K)) //INIT shortlist fullösning
