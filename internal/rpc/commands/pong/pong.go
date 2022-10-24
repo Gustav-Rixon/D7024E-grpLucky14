@@ -4,6 +4,8 @@ import (
 	"kademlia/internal/address"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Pong struct {
@@ -18,6 +20,7 @@ func New(senderID *kademliaid.KademliaID, senderAddress *address.Address, rpcId 
 
 func (pong Pong) Execute(node *node.Node) {
 	// MUST BE EMPTY OR CHOASSS
+	log.Trace().Msg("Executing PONG RPC")
 }
 
 func (pong Pong) ParseOptions(options *[]string) error {

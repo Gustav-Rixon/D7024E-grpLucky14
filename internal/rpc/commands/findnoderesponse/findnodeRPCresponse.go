@@ -29,6 +29,7 @@ func (Resp *FindNodeResponse) Execute(node *node.Node) {
 	ALPHA, err := strconv.Atoi(os.Getenv("ALPHA"))
 	if err != nil {
 		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+		ALPHA = 3
 	}
 
 	//Just add contacts to its shortlist?
