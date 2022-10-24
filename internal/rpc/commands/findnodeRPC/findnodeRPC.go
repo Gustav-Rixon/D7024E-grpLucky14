@@ -29,6 +29,7 @@ func (targetID *FindNodeRPC) Execute(node *node.Node) {
 	K, err := strconv.Atoi(os.Getenv("K"))
 	if err != nil {
 		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+		K = 4
 	}
 
 	// Responde with k clossets nodes
