@@ -45,7 +45,7 @@ func TestParseOptions(t *testing.T) {
 	//Should never return an error
 	assert.NoError(t, p.ParseOptions(&options))
 
-	p.Execute(&n)
+	//p.Execute(&n)
 
 	options = []string{}
 	assert.Error(t, p.ParseOptions(&options))
