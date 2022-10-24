@@ -40,12 +40,12 @@ func TestGetContactAndCalcDistance(t *testing.T) {
 
 func TestGetContactAndCalcDistanceNoRequestor(t *testing.T) {
 	b := bucket.NewBucket()
-	key := kademliaid.NewRandomKademliaID()
-	key3 := kademliaid.NewRandomKademliaID()
+	key := kademliaid.FromString("0000000000000000000000000000000000000001") // random id's cant be trusted
+	key3 := kademliaid.FromString("0000000000000000000000000000000000000003")
 	inAddr := "127.0.0.1:8888"
 	adr := address.New(inAddr)
 	b.AddContact(contact.NewContact(key, adr))
-	key2 := kademliaid.NewRandomKademliaID()
+	key2 := kademliaid.FromString("0000000000000000000000000000000000000002")
 	c := b.GetContactAndCalcDistanceNoRequestor(key2, key3)
 	assert.NotNil(t, c)
 }
