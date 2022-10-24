@@ -24,4 +24,7 @@ func TestParseOptions(t *testing.T) {
 	r.Execute(&n)
 	//Should never return an error
 	assert.NotNil(t, r)
+	options = []string{}
+	err = r.ParseOptions(&options)
+	assert.Error(t, err)
 }
