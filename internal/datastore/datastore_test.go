@@ -24,11 +24,13 @@ func TestGetValue(t *testing.T) {
 	contacts := &[]contact.Contact{}
 	d.Insert(value, contacts, nil, true)
 	assert.Equal(t, d.GetValue(kademliaid.NewKademliaID(&value)), "hello")
+	assert.Equal(t, d.Get(kademliaid.NewKademliaID(&value)), "hello")
 
 	// Should not be able to get non-existent key
 	d = datastore.New()
 	value = "hello"
 	assert.Equal(t, d.GetValue(kademliaid.NewKademliaID(&value)), "")
+	assert.Equal(t, d.Get(kademliaid.NewKademliaID(&value)), "")
 }
 
 func TestInsert(t *testing.T) {
