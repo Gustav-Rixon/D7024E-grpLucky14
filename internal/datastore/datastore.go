@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"fmt"
+	"kademlia/internal/constants"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/rpc"
@@ -25,7 +26,7 @@ type Data struct {
 }
 
 // TTL functionality inspired by: https://github.com/Konstantin8105/SimpleTTL/blob/master/simplettl.go
-const TTL time.Duration = 30 * time.Second
+const TTL time.Duration = constants.DataTTL * time.Second
 
 // Create the hash map
 func New() DataStore {

@@ -3,6 +3,7 @@ package findnode
 import (
 	"errors"
 	"fmt"
+	"kademlia/internal/constants"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 	"strings"
@@ -20,7 +21,7 @@ func (id *FindNode) Execute(node *node.Node) (string, error) {
 	tt := kademliaid.FromString(id.targetHash)
 
 	// Get Round 1 contacts
-	candidats := node.FindKClosest(tt, node.ID, 3)
+	candidats := node.FindKClosest(tt, node.ID, constants.K)
 
 	fmt.Println("!")
 	fmt.Println(candidats)

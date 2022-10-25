@@ -2,6 +2,7 @@ package bucket
 
 import (
 	"container/list"
+	"kademlia/internal/constants"
 	. "kademlia/internal/contact"
 	. "kademlia/internal/kademliaid"
 )
@@ -11,8 +12,6 @@ import (
 type Bucket struct {
 	list *list.List
 }
-
-const bucketSize = 20
 
 // NewBucket returns a new instance of a Bucket
 func NewBucket() *Bucket {
@@ -34,7 +33,7 @@ func (bucket *Bucket) AddContact(contact Contact) {
 	}
 
 	if element == nil {
-		if bucket.list.Len() < bucketSize {
+		if bucket.list.Len() < constants.K {
 			bucket.list.PushFront(contact)
 		}
 	} else {

@@ -15,7 +15,7 @@ services:
       dockerfile: Dockerfile
     deploy:
       mode: replicated
-      replicas: 10
+      replicas: 50
       #        resources:
       #           limits:
       #              cpus: "0.1"
