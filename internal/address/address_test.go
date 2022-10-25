@@ -13,4 +13,12 @@ func TestString(t *testing.T) {
 	inAddr := "127.0.0.1:8888"
 	adr := address.New(inAddr)
 	assert.Equal(t, adr.String(), inAddr)
+
+	inAddr = "127.0.0.1"
+	adr = address.New(inAddr)
+	assert.NotNil(t, adr.String())
+
+	inAddr = "1"
+	adr = address.New(inAddr)
+	assert.NotNil(t, adr.String())
 }
