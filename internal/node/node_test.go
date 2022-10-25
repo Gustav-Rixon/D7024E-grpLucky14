@@ -3,6 +3,7 @@ package node_test
 import (
 	"kademlia/internal/address"
 	"kademlia/internal/contact"
+	"kademlia/internal/datastore"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
 	"testing"
@@ -27,31 +28,6 @@ func TestFindKClosest(t *testing.T) {
 
 	kClosest := n.FindKClosest(key, id1, 3)
 	assert.Equal(t, 2, len(kClosest))
-}
-
-func TestInitBOOTAndStore(t *testing.T) {
-	n := node.Node{}
-	addr := address.New("127.0.1.1")
-	n.InitBOOT(addr)
-
-	assert.NotNil(t, n)
-
-	n2 := node.Node{}
-	addr2 := address.New("127.0.1.1")
-	n2.Init(addr2)
-	skitt := "0000000000000000000000000000000000000000"
-	id := kademliaid.NewKademliaID(&skitt)
-	var cc contact.ContactCandidates
-	bucketindex := n.RoutingTable.GetBucketIndex(&id)
-	bucket := n.RoutingTable.Buckets[bucketindex]
-	cc.Append(bucket.GetContactAndCalcDistance(&id))
-	n2.Store(&skitt, &cc.Contacts)
-
-	gotten := n2.DataStore.Get(id)
-
-	//cont := n2.RoutingTable.FindClosestContacts(&id, n.ID, 1)
-
-	assert.NotNil(t, gotten)
 }
 
 func TestNewRPC(t *testing.T) {
@@ -98,4 +74,31 @@ func TestFind(t *testing.T) {
 	n.FIND_DATA(&id)
 
 	assert.NotNil(t, n.Shortlist.GetData())
+}
+
+func TestStore(t *testing.T) {
+	n := node.Node{}
+	d := datastore.New()
+	n.DataStore = d
+
+	// should be equal
+	value := "TEST"
+	id := kademliaid.NewKademliaID(&value)
+	contacts := &[]contact.Contact{}
+	n.Store(&value, contacts)
+	assert.Equal(t, "TEST", n.DataStore.Get(id))
+
+	// should be Not be equal
+	value2 := "TEST2"
+	id2 := kademliaid.NewKademliaID(&value2)
+	contacts2 := &[]contact.Contact{}
+	n.Store(&value2, contacts2)
+	assert.NotEqual(t, "TEST", n.DataStore.Get(id2))
+
+	// should not be able to store without a contact
+	value3 := "TEST3"
+	id3 := kademliaid.NewKademliaID(&value3)
+	n.Store(&value3, nil)
+	assert.Equal(t, "TEST3", n.DataStore.Get(id3))
+
 }
