@@ -26,3 +26,15 @@ func TestExecute(t *testing.T) {
 	s.Execute(&node)
 	assert.Equal(t, fileContent, node.DataStore.GetValue(kademliaid.NewKademliaID(&fileContent)))
 }
+
+func TestParseOptions(t *testing.T) {
+	var s store.Store
+	var options []string
+	var err error
+
+	// Should return an error if file content has not been specified
+	options = []string{}
+	err = s.ParseOptions(&options)
+	assert.EqualError(t, err, "Received empty STORE RPC")
+
+}
