@@ -4,7 +4,11 @@ import (
 	"strings"
 
 	"kademlia/internal/command/commands/add"
+<<<<<<< Updated upstream
 	"kademlia/internal/command/commands/findnode"
+=======
+	"kademlia/internal/command/commands/forget"
+>>>>>>> Stashed changes
 	"kademlia/internal/command/commands/get"
 	"kademlia/internal/command/commands/getTable"
 	"kademlia/internal/command/commands/getid"
@@ -49,16 +53,18 @@ func ParseCmd(s string) Command {
 	case "getTable":
 		command = new(getTable.GetTable)
 
-	case "findNode":
-		command = new(findnode.FindNode)
-
 	case "getid":
 		command = new(getid.GetId)
 	case "join":
 		command = new(join.Join)
 
+<<<<<<< Updated upstream
 	//case "findValue":
 	//	command = new()
+=======
+	case "forget":
+		command = new(forget.Forget)
+>>>>>>> Stashed changes
 
 	default:
 		log.Error().Str("command", cmd).Msg("Received unknown command")
