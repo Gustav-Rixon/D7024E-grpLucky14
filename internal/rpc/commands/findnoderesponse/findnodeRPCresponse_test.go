@@ -42,10 +42,11 @@ func TestParseOptions(t *testing.T) {
 	c4 := contact.NewContact(&id4, addr)
 	n.RoutingTable.AddContact(c4)
 
+	n.FIND_NODE(&id4)
 	//Should never return an error
 	assert.NoError(t, p.ParseOptions(&options))
 
-	//p.Execute(&n)
+	p.Execute(&n)
 
 	options = []string{}
 	assert.Error(t, p.ParseOptions(&options))
