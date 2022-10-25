@@ -19,6 +19,7 @@ done
 known_node_cid="$(echo "$cont_ids" | head -n 1)"
 i=0
 for id in $cont_ids; do
+docker exec -ti $id cli ping ${arrIp[1]} #quick fix
   docker exec -ti $id cli join ${arrIp[0]}
   #echo $id "joining on" ${arrIp[i]}
   ((i++))
