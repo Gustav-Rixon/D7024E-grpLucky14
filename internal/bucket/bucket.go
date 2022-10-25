@@ -75,3 +75,7 @@ func (bucket *Bucket) GetContactAndCalcDistanceNoRequestor(target *KademliaID, r
 func (bucket *Bucket) Len() int {
 	return bucket.list.Len()
 }
+
+func (bucket *Bucket) GetBucketList() list.List {
+	return *bucket.list
+}

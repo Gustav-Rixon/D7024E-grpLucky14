@@ -50,26 +50,6 @@ func (node *Node) Init(address *address.Address) {
 	}
 }
 
-// SUPER/BOOT will have the ID: 9514e18b679622b8d59991a6298559cb03099d64
-func (node *Node) InitBOOT(address *address.Address) {
-	skitt := "0000000000000000000000000000000000000000"
-	id := kademliaid.NewKademliaID(&skitt)
-	me := contact.NewContact(&id, address)
-	Sender, err := sender.New()
-
-	if err != nil {
-		log.Fatal().Str("Error", err.Error()).Msg("Failed to initialize ndoe")
-	}
-
-	*node = Node{
-		ID:           &id,
-		DataStore:    datastore.New(),
-		RoutingTable: routingtable.NewRoutingTable(me),
-		Network:      network.Network{UdpSender: Sender},
-		bootstrap:    true,
-	}
-}
-
 // Stores values in datastore, continually sends RefreshRPCs to other nodes with the same data on them as to not let it expire
 func (node *Node) Store(value *string, contacts *[]contact.Contact) {
 	log.Trace().Str("Value", *value).Msg("Storing value")
