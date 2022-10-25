@@ -3,6 +3,7 @@ package node
 import (
 	"fmt"
 	"kademlia/internal/address"
+	"kademlia/internal/constants"
 	"kademlia/internal/contact"
 	"kademlia/internal/datastore"
 	"kademlia/internal/kademliaid"
@@ -112,14 +113,7 @@ func (node *Node) NewRPC(content string, target *address.Address) rpc.RPC {
 
 // https://kelseyc18.github.io/kademlia_vis/lookup/
 func (node *Node) FIND_NODE(LookingUp *kademliaid.KademliaID) []contact.Contact {
-
-	K, err := strconv.Atoi(os.Getenv("K"))
-	if err != nil {
-		log.Error().Msgf("Failed to convert env variable K from string to int: %s", err)
-		K = 4
-	}
-
-	node.Shortlist = shortlist.NewShortlist(LookingUp, node.FindKClosest(node.ID, LookingUp, K)) //INIT shortlist fullösning
+	node.Shortlist = shortlist.NewShortlist(LookingUp, node.FindKClosest(node.ID, LookingUp, constants.K)) //INIT shortlist fullösning
 
 	for {
 		closestSoFar := node.Shortlist.Closest
@@ -147,19 +141,13 @@ func (node *Node) FIND_NODE(LookingUp *kademliaid.KademliaID) []contact.Contact 
 
 func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) {
 
-	K, err := strconv.Atoi(os.Getenv("K"))
-	if err != nil {
-		log.Error().Msgf("Failed to convert env variable K from string to int: %s", err)
-		K = 4
-	}
-
 	ALPHA, err := strconv.Atoi(os.Getenv("ALPHA"))
 	if err != nil {
 		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
 		ALPHA = 3
 	}
 
-	node.Shortlist = shortlist.NewShortlist(hash, node.FindKClosest(node.ID, hash, K)) //INIT shortlist fullösning
+	node.Shortlist = shortlist.NewShortlist(hash, node.FindKClosest(node.ID, hash, constants.K)) //INIT shortlist fullösning
 
 	for {
 		closestSoFar := node.Shortlist.Closest

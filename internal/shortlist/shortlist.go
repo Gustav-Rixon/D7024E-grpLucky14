@@ -1,12 +1,13 @@
 package shortlist
 
 import (
+	"kademlia/internal/constants"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"sort"
 )
 
-const k = 4 // k-closest
+const k = constants.K // k-closest
 
 type Entry struct {
 	Contact       contact.Contact

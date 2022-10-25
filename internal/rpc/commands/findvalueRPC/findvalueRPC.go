@@ -3,11 +3,10 @@ package findvalueRPC
 import (
 	"errors"
 	"fmt"
+	"kademlia/internal/constants"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
-	"os"
-	"strconv"
 
 	"github.com/rs/zerolog/log"
 )
@@ -38,12 +37,8 @@ func (find *FindValueRPC) Execute(node *node.Node) {
 		response := "VALUE=" + value
 		node.Network.SendFindDataRespMessage(node.ID, find.senderAddress.Address, find.rpcId, &response)
 	} else {
-		k, err := strconv.Atoi(os.Getenv("K"))
-		if err != nil {
-			log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
-		}
 		log.Debug().Str("Hash", *find.hash).Msg("Did not find key")
-		closest := node.FindKClosest(key, find.senderAddress.ID, k)
+		closest := node.FindKClosest(key, find.senderAddress.ID, constants.K)
 		data := contact.SerializeContacts(closest)
 		node.Network.SendFindDataRespMessage(node.ID, find.senderAddress.Address, find.rpcId, &data)
 	}
