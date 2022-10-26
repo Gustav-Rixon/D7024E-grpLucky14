@@ -38,7 +38,11 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 		//fmt.Println("@@@@@@@test@@@@@@@")
 
 		//value = node.Shortlist.GetData() + " from "
-		value = node.Shortlist.GetData() + ", from " + node.Shortlist.GetDataHost().String()
+		if node.Shortlist.GetData() != "" {
+			value = node.Shortlist.GetData() + ", from " + node.Shortlist.GetDataHost().String()
+		} else {
+			value = node.Shortlist.GetData()
+		}
 
 		fmt.Println("@@@@@CLOSETS TARGET INFO@@@@@")
 		fmt.Println(node.Shortlist.Entries[0].Contact.Address)
@@ -58,7 +62,11 @@ func (get *Get) Execute(node *node.Node) (string, error) {
 			}
 		}
 
-		value = node.Shortlist.GetData() + ", from " + node.Shortlist.GetDataHost().String()
+		if node.Shortlist.GetData() != "" {
+			value = node.Shortlist.GetData() + ", from " + node.Shortlist.GetDataHost().String()
+		} else {
+			value = node.Shortlist.GetData()
+		}
 
 		if value != "" {
 			return value, nil

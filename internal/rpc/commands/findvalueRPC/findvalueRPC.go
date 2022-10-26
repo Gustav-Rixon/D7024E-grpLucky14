@@ -2,7 +2,6 @@ package findvalueRPC
 
 import (
 	"errors"
-	"fmt"
 	"kademlia/internal/constants"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
@@ -27,12 +26,6 @@ func (find *FindValueRPC) Execute(node *node.Node) {
 	key := kademliaid.FromString(*find.hash)
 
 	if value := node.DataStore.GetValue(*key); value != "" {
-
-		fmt.Println("@@@@@@@@@Key Found@@@@@@@@@@@")
-		fmt.Println(fmt.Sprintf("Found at node: %s", node.ID))
-		fmt.Println(fmt.Sprintf("Item %s", value))
-		fmt.Println("@@@@@@@@@Key Found@@@@@@@@@@@")
-
 		log.Debug().Str("Value", value).Str("Hash", *find.hash).Msg("Key Found")
 		response := "VALUE=" + value
 		node.Network.SendFindDataRespMessage(node.ID, find.senderAddress.Address, find.rpcId, &response)
