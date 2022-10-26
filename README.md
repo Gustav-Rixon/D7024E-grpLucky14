@@ -28,7 +28,7 @@ This scripts executes the join command onto a random chosen node.
 ## Interacting with the network
 All nodes have an CLI that can be interacted with thru docker 
 ```sh
-   docker exec -ti <container-id> ctl <command>
+   docker exec -ti <container-id> cli <command>
    ```
 ## REST API
 All nodes have a RESTFUL API with the following method
