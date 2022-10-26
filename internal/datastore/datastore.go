@@ -26,7 +26,7 @@ type Data struct {
 }
 
 // TTL functionality inspired by: https://github.com/Konstantin8105/SimpleTTL/blob/master/simplettl.go
-const TTL time.Duration = constants.DataTTL * time.Second
+const TTL time.Duration = constants.DATA_TTL * time.Second
 
 // Create the hash map
 func New() DataStore {

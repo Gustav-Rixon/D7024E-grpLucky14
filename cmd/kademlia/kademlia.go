@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"kademlia/internal/address"
 	cmdlistener "kademlia/internal/command/listener"
+	"kademlia/internal/constants"
 	"kademlia/internal/network/listener"
 	"kademlia/internal/network/restAPI"
 	"kademlia/internal/node"
 	"kademlia/internal/rpc/rpcqueue"
 	"net"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -40,17 +40,14 @@ func InitLogger(level string) error {
 }
 
 func main() {
-	logLevel := os.Getenv("LOG_LEVEL")
+	logLevel := constants.LOG_LEVEL
 	if err := InitLogger(logLevel); err == nil {
 		log.Info().Str("Level", logLevel).Msg("Log level set")
 	} else {
 		log.Error().Str("Level", logLevel).Msg("Failed to parse log level, defaulting to info level...")
 	}
 
-	lport, err := strconv.Atoi(os.Getenv("LISTEN_PORT"))
-	if err != nil {
-		log.Error().Msgf("Failed to convert env variable LISTEN_PORT from string to int: %s", err)
-	}
+	lport := constants.LISTEN_PORT
 
 	host, err := os.Hostname()
 	ip := GetHostIP().String()

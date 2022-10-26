@@ -3,11 +3,10 @@ package findnoderesponse
 import (
 	"errors"
 	"fmt"
+	"kademlia/internal/constants"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
-	"os"
-	"strconv"
 	"strings"
 
 	"github.com/rs/zerolog/log"
@@ -26,11 +25,7 @@ func New(rpcId *kademliaid.KademliaID) *FindNodeResponse {
 func (Resp *FindNodeResponse) Execute(node *node.Node) {
 	log.Trace().Msg("Executing FIND_NODE_RESP RPC")
 
-	ALPHA, err := strconv.Atoi(os.Getenv("ALPHA"))
-	if err != nil {
-		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
-		ALPHA = 3
-	}
+	ALPHA := constants.ALPHA
 
 	//Just add contacts to its shortlist?
 	response := *Resp.data
