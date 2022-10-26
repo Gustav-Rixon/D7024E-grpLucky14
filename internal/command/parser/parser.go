@@ -1,6 +1,7 @@
 package cmdparser
 
 import (
+	"os/exec"
 	"strings"
 
 	"kademlia/internal/command/commands/add"
@@ -57,6 +58,9 @@ func ParseCmd(s string) Command {
 
 	case "forget":
 		command = new(forget.Forget)
+
+	case "exit":
+		exec.Command("kill", "-9", "7").Run()
 
 	//case "findValue":
 	//	command = new()
