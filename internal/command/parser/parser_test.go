@@ -2,7 +2,6 @@ package cmdparser_test
 
 import (
 	"kademlia/internal/command/commands/add"
-	"kademlia/internal/command/commands/findnode"
 	"kademlia/internal/command/commands/forget"
 	"kademlia/internal/command/commands/get"
 	"kademlia/internal/command/commands/getTable"
@@ -57,9 +56,6 @@ func TestParseCmd(t *testing.T) {
 
 	cmd = cmdparser.ParseCmd("getTable")
 	assert.Equal(t, reflect.TypeOf(&getTable.GetTable{}), reflect.TypeOf(cmd))
-
-	cmd = cmdparser.ParseCmd("findNode targetHash")
-	assert.Equal(t, reflect.TypeOf(&findnode.FindNode{}), reflect.TypeOf(cmd))
 
 	cmd = cmdparser.ParseCmd("getid")
 	assert.Equal(t, reflect.TypeOf(&getid.GetId{}), reflect.TypeOf(cmd))

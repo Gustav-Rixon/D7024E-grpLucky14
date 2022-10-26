@@ -12,3 +12,15 @@ func TestStrArrayToByteArray(t *testing.T) {
 	main.StrArrayToByteArray(streng)
 	assert.NotNil(t, main.StrArrayToByteArray(streng))
 }
+
+func TestReader(t *testing.T) {
+
+}
+
+func SendMessage(t *testing.T) {
+
+}
+
+func TestMain(m *testing.M) {
+
+}

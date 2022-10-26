@@ -11,6 +11,7 @@ func TestInitLogger(t *testing.T) {
 	assert.NoError(t, main.InitLogger("1"))
 }
 
-func TestBootstrap(t *testing.T) {
-	//no this is cursed
+func TestGetHostIP(t *testing.T) {
+	ip := main.GetHostIP().String()
+	assert.NotEqual(t, "", ip)
 }
