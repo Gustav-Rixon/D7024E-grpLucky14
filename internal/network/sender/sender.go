@@ -2,9 +2,8 @@ package sender
 
 import (
 	"kademlia/internal/address"
-	"kademlia/internal/constants"
 	"net"
-	"strconv"
+	"os"
 )
 
 type Sender struct {
@@ -12,7 +11,7 @@ type Sender struct {
 }
 
 func New() (*Sender, error) {
-	senderPort := ":" + strconv.FormatInt(constants.SEND_PORT, 10) // Retrive port from docker env
+	senderPort := ":" + os.Getenv("SEND_PORT") // Retrive port from docker env
 	literalAddr, err := net.ResolveUDPAddr("", senderPort)
 	connection, err := net.ListenUDP("udp4", literalAddr)
 	if err != nil {

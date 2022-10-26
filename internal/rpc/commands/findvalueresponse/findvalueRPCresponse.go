@@ -3,10 +3,11 @@ package findvalueresp
 import (
 	"errors"
 	"fmt"
-	"kademlia/internal/constants"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"kademlia/internal/node"
+	"os"
+	"strconv"
 
 	"strings"
 
@@ -28,7 +29,10 @@ func (Resp *FindValueResp) Execute(node *node.Node) {
 	response := &Resp.content
 	awnser := strings.Split(Resp.content, "=")
 
-	ALPHA := constants.ALPHA
+	ALPHA, err := strconv.Atoi(os.Getenv("ALPHA"))
+	if err != nil {
+		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+	}
 
 	if awnser[0] == "VALUE" {
 		log.Debug().Str("Key found", awnser[1])

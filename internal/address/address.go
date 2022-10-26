@@ -1,9 +1,8 @@
 package address
 
 import (
-	"kademlia/internal/constants"
 	"net"
-	"strconv"
+	"os"
 
 	"github.com/rs/zerolog/log"
 )
@@ -13,7 +12,10 @@ type Address struct {
 }
 
 func New(address string) *Address {
-	lport := strconv.FormatInt(constants.LISTEN_PORT, 10)
+	lport := os.Getenv("LISTEN_PORT")
+	if lport == "" { // if the env var was not defined
+		lport = "8888"
+	}
 
 	host, port, err := net.SplitHostPort(address)
 	if err != nil && port == "" {

@@ -12,6 +12,8 @@ import (
 	"kademlia/internal/routingtable"
 	"kademlia/internal/rpc"
 	"kademlia/internal/shortlist"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -119,7 +121,11 @@ func (node *Node) FIND_NODE(LookingUp *kademliaid.KademliaID) []contact.Contact 
 
 func (node *Node) FIND_DATA(hash *kademliaid.KademliaID) {
 
-	ALPHA := constants.ALPHA
+	ALPHA, err := strconv.Atoi(os.Getenv("ALPHA"))
+	if err != nil {
+		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+		ALPHA = 3
+	}
 
 	node.Shortlist = shortlist.NewShortlist(hash, node.FindKClosest(node.ID, hash, constants.K)) //INIT shortlist fullösning
 
