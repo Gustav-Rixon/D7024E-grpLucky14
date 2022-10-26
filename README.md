@@ -1,28 +1,48 @@
-# docker-gs-ping
+# D7024e - kademlia-lab
+## 2022 Lab group 14 
+This is a lab for the course [Mobile and distributed computing systems](https://www.ltu.se/edu/course/D70/D7024E/D7024E-Mobila-och-distribuerade-datorsystem-1.67844) at [Luleå University of Technology](https://www.ltu.se/)
 
-A simple Go server/microservice example for [Docker's Go Language Guide](https://docs.docker.com/language/golang/).
+# Starting the project
+## Prerequisites
+* [Go](https://go.dev/)
+* [Docker](https://www.docker.com/)
 
-Notable features:
+## Installation
+```sh
+   git clone https://github.com/your_username_/Project-Name.git
+   ```
+## Running
+From the project directory run
 
-* Includes a [multi-stage `Dockerfile`](https://github.com/olliefr/docker-gs-ping/blob/main/Dockerfile.multistage), which actually is a good example of how to build Go binaries _for production releases_.
-* Has functional tests for application's business requirements with proper isolation between tests using [`ory/dockertest`](https://github.com/ory/dockertest).
-* Has a CI pipeline using GitHub Actions to run functional tests in independent containers.
-* Has a CD pipeline using GitHub Actions to publish to Docker Hub.
+```sh
+   docker build --tag kademlia .
+   docker compose up
+   ```
+### Initilizing the network
+To initilize the network executing the following script
+```sh
+   ./init.sh
+   ```
+This scripts executes the join command onto a random chosen node.
 
-Planned:
+## Interacting with the network
+All nodes have an CLI that can be interacted with thru docker 
+```sh
+   docker exec -ti <container-id> ctl <command>
+   ```
+## REST API
+All nodes have a RESTFUL API with the following method
 
-* Building Go modules and Docker images with `goreleaser`
+Method: GET, endpoint: /objects/{hash}/
 
-## Want _moar_?!
+The {hash} portion of the HTTP path is to be substituted for the hash of the object. A successful call should result in the contents of the object being responded with.
 
-There is a more advanced example in [olliefr/docker-gs-ping-roach](https://github.com/olliefr/docker-gs-ping-roach) using [CockroachDB](https://github.com/cockroachdb/cockroach).
+Method: POST, endpoint: /objects
 
-## Contributing
+Each message sent to the endpoint must contain a data object in its HTTP body. If the operation is successful, the node will reply with 201 CREATED containing both the contents of the uploaded object and a Location: /objects/{hash} header, where {hash} will be substituted for the hash of the uploaded object.
 
-This was written for an _introduction_ section of the Docker tutorial and as such it favours brevity and pedagogical clarity over robustness. 
-
-Thus, feedback is welcome, but please no nits or pedantry. Ain't nobody got time for that 🙃
-
-## License
-
-[Apache-2.0 License](LICENSE)
+## Test
+```sh
+    go test ./... -coverprofile=coverage.out
+    go tool cover -func coverage.out
+   ```
