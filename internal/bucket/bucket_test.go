@@ -7,6 +7,7 @@ import (
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -36,6 +37,7 @@ func TestAddContact(t *testing.T) {
 	// Adding a new contact to a full bucket
 	b = bucket.NewBucket()
 	for i := 0; i < 20; i++ {
+		time.Sleep(time.Nanosecond)
 		c = contact.NewContact(kademliaid.NewRandomKademliaID(), adr)
 		b.AddContact(c)
 	}
@@ -56,6 +58,7 @@ func TestAddContact(t *testing.T) {
 	b = bucket.NewBucket()
 	var testContact contact.Contact
 	for i := 0; i < 20; i++ {
+		time.Sleep(time.Nanosecond)
 		c = contact.NewContact(kademliaid.NewRandomKademliaID(), adr)
 		b.AddContact(c)
 
