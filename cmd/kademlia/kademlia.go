@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"kademlia/internal/address"
 	cmdlistener "kademlia/internal/command/listener"
 	"kademlia/internal/network/listener"
@@ -62,7 +61,6 @@ func main() {
 	rpcQ := rpcqueue.New()
 	addr := address.New(ip + ":8888")
 	node.Init(addr)
-	fmt.Println(node.ID)
 	go cmdlistener.Listen(&node)
 	go restAPI.Listen(&node)
 	listener.Listen(ip, lport, &node, &rpcQ)
