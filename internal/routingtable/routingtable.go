@@ -5,9 +5,9 @@ import (
 	"kademlia/internal/bucket"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
-)
 
-const bucketSize = 20
+	"github.com/rs/zerolog/log"
+)
 
 // RoutingTable definition
 // keeps a refrence contact of me and an array of buckets
@@ -33,12 +33,12 @@ func (routingTable *RoutingTable) GetMe() *contact.Contact {
 
 // AddContact add a new contact to the correct Bucket
 func (routingTable *RoutingTable) AddContact(contact contact.Contact) {
-	if contact.ID.Equals(routingTable.me.ID) != true {
+	if !contact.ID.Equals(routingTable.me.ID) {
 		bucketIndex := routingTable.GetBucketIndex(contact.ID)
 		bucket := routingTable.Buckets[bucketIndex]
 		bucket.AddContact(contact)
 	} else {
-		fmt.Println("ajajajajaj")
+		log.Trace().Msg("Add contact failed")
 	}
 }
 
