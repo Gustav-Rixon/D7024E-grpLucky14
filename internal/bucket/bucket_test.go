@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"kademlia/internal/address"
 	"kademlia/internal/bucket"
+	"kademlia/internal/constants"
 	"kademlia/internal/contact"
 	"kademlia/internal/kademliaid"
 	"testing"
@@ -11,6 +12,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
+
+const k = constants.K // k-closest
 
 func TestNewBucket(t *testing.T) {
 	// should create a new and empty bucket
@@ -42,13 +45,13 @@ func TestAddContact(t *testing.T) {
 		b.AddContact(c)
 	}
 	fullBucket := b.GetBucketList()
-	assert.Equal(t, fullBucket.Len(), 20)
+	assert.Equal(t, fullBucket.Len(), k)
 
 	// should not add the contact
 	newContact := contact.NewContact(kademliaid.NewRandomKademliaID(), adr)
 	b.AddContact(newContact)
 	newFullBucket := b.GetBucketList()
-	assert.Equal(t, newFullBucket.Len(), 20)
+	assert.Equal(t, newFullBucket.Len(), k)
 	for i, j := newFullBucket.Front(), fullBucket.Front(); i != nil || j != nil; i, j = i.Next(), j.Next() {
 		assert.True(t, i.Value.(contact.Contact) == j.Value.(contact.Contact))
 	}
@@ -67,7 +70,7 @@ func TestAddContact(t *testing.T) {
 		}
 	}
 	bList = b.GetBucketList()
-	assert.Equal(t, bList.Len(), 20)
+	assert.Equal(t, bList.Len(), k)
 
 	assert.False(t, bList.Front().Value.(contact.Contact) == testContact)
 	b.AddContact(testContact)
