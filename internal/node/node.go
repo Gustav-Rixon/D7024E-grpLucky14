@@ -95,9 +95,15 @@ func (node *Node) NewRPC(content string, target *address.Address) rpc.RPC {
 func (node *Node) FIND_NODE(LookingUp *kademliaid.KademliaID) []contact.Contact {
 	node.Shortlist = shortlist.NewShortlist(LookingUp, node.FindKClosest(node.ID, LookingUp, constants.K)) //INIT shortlist fullösning
 
+	ALPHA, err := strconv.Atoi(os.Getenv("ALPHA"))
+	if err != nil {
+		log.Error().Msgf("Failed to convert env variable ALPHA from string to int: %s", err)
+		ALPHA = 3
+	}
+
 	for {
 		closestSoFar := node.Shortlist.Closest
-		probed := node.ProbeAlpha(*node.Shortlist, 4, fmt.Sprintf("%s %s", "FIND_NODE", LookingUp))
+		probed := node.ProbeAlpha(*node.Shortlist, ALPHA, fmt.Sprintf("%s %s", "FIND_NODE", LookingUp))
 
 		if probed == 0 {
 			log.Trace().Msg("FIND_NODE lookup became stale")
